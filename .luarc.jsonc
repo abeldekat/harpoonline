@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+  // This .jsonc is setup in the same way as neodev.nvim operates
+  "runtime": {
+    "path": [
+      "?.lua",
+      "?/init.lua"
+    ],
+    "pathStrict": true,
+    "version": "LuaJIT"
+  },
+  "workspace": {
+    "checkThirdParty": false,
+    "ignoreDir": [
+      "lua"
+    ],
+    "library": [
+      "$VIMRUNTIME/lua",
+      //
+      "${3rd}/luv/library",
+      "${3rd}/busted/library",
+      "$XDG_DATA_HOME/nvim/site/pack/deps/start/mini.nvim/lua",
+      "$XDG_DATA_HOME/nvim/site/pack/deps/opt/harpoon/lua"
+    ]
+  }
+}
