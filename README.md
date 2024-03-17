@@ -68,52 +68,56 @@ H.data = {
 ### Using mini.deps and mini.statusline
 
 ```lua
-  local function config()
-    local MiniStatusline = require("mini.statusline")
-    local HarpoonLine= require("harpoonline")
+local function config()
+  local MiniStatusline = require("mini.statusline")
+  local HarpoonLine= require("harpoonline")
 
-    local function harpoon_highlight() -- example using mini.hipatterns:
-      return Harpoonline.is_buffer_harpooned() and "MiniHipatternsHack"
-        or "MiniStatuslineFilename" ----> highlight when a buffer is harpooned
+
+  local function isnt_normal_buffer()
+    return vim.bo.buftype ~= ""
+  end
+  local function harpoon_highlight() -- example using mini.hipatterns:
+    return Harpoonline.is_buffer_harpooned() and "MiniHipatternsHack"
+      or "MiniStatuslineFilename" ----> highlight when a buffer is harpooned
+  end
+  local function section_harpoon(args)
+    if MiniStatusline.is_truncated(args.trunc_width)
+      or isnt_normal_buffer() then
+      return ""
     end
-    local function section_harpoon(args)
-      if MiniStatusline.is_truncated(args.trunc_width)
-        or H.isnt_normal_buffer() then
-        return ""
-      end
-      return Harpoonline.format() ---->  produce the info
-    end
-    local function active() -- adding a harpoon section:
+    return Harpoonline.format() ---->  produce the info
+  end
+  local function active() -- adding a harpoon section:
+    -- copy lines from mini.statusline, H.default_content_active:
+    -- ...
+    local harpoon_data = section_harpoon({ trunc_width = 75 })
+    -- ...
+  
+    return MiniStatusline.combine_groups({
       -- copy lines from mini.statusline, H.default_content_active:
       -- ...
-      local harpoon_data = section_harpoon({ trunc_width = 75 })
+      { hl = H.harpoon_highlight(), strings = { harpoon_data } },
       -- ...
-    
-      return MiniStatusline.combine_groups({
-        -- copy lines from mini.statusline, H.default_content_active:
-        -- ...
-        { hl = H.harpoon_highlight(), strings = { harpoon_data } },
-        -- ...
-      })
+    })
+  end
+
+  HarpoonLine.setup({
+    on_update = function()
+      vim.wo.statusline = "%!v:lua.MiniStatusline.active()"
     end
+  })
+  MiniStatusline.setup({
+    set_vim_settings = false,
+    content = { active = active },
+  })
+end
 
-    HarpoonLine.setup({
-      on_update = function()
-        vim.wo.statusline = "%!v:lua.MiniStatusline.active()"
-      end
-    })
-    MiniStatusline.setup({
-      set_vim_settings = false,
-      content = { active = active },
-    })
-  end
-
-  local MiniDeps = require("mini.deps")
-  local add, now = MiniDeps.add, MiniDeps.now
-  now(function()
-    add({ source = "echasnovski/mini.statusline", depends = {"abeldekat/harpoonline"}})
-    config()
-  end
+local MiniDeps = require("mini.deps")
+local add, now = MiniDeps.add, MiniDeps.now
+now(function()
+  add({ source = "echasnovski/mini.statusline", depends = {"abeldekat/harpoonline"}})
+  config()
+end
 ```
 
 ## Configuration
