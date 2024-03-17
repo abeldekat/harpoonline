@@ -1,2 +1,2 @@
-# harpoon-line
-Harpoon status for any statusline
+# harpoonline
+Harpoon info for any statusline
