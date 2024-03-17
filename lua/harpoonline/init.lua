@@ -1,11 +1,15 @@
 -- Module definition ==========================================================
 
--- icons "󰀱", "", "󱡅"
+-- suitable icons: "󰀱", "", "󱡅"
 local Harpoon = require('harpoon')
 local Extensions = require('harpoon.extensions')
+
+---@class HarpoonLine
 local Harpoonline = {}
 local H = {}
 
+---@param config? HarpoonLineConfig
+---@return HarpoonLine
 Harpoonline.setup = function(config)
   config = H.setup_config(config)
   H.apply_config(config)
@@ -15,15 +19,22 @@ Harpoonline.setup = function(config)
   return Harpoonline
 end
 
+---@class HarpoonLineConfig
 Harpoonline.config = {
   icon = '󰀱', --   󱡅
   default_list_name = '',
   formatter = 'extended',
+
+  ---@type fun():string|nil
   custom_formatter = nil, -- use this formatter when supplied
   on_update = nil, -- example: apply ministatusline.set_active
 }
 
+---@type table<string,function>
 Harpoonline.formatters = {
+  ---@param data HarpoonLineData
+  ---@param _ any
+  ---@return string
   simple = function(data, _)
     return string.format(
       '%s %s[%s%d]',
@@ -33,6 +44,10 @@ Harpoonline.formatters = {
       data.list_length
     )
   end,
+
+  ---@param data HarpoonLineData
+  ---@param opts table
+  ---@return string
   extended = function(data, opts)
     --          ╭─────────────────────────────────────────────────────────╮
     --          │             credits letieu/harpoon-lualine              │
@@ -56,7 +71,7 @@ Harpoonline.formatters = {
     return prefix .. ' ' .. table.concat(status, ' ')
   end,
 }
-
+---@type table<string,table>
 Harpoonline.formatter_opts = {
   simple = {},
   extended = {
@@ -68,16 +83,22 @@ Harpoonline.formatter_opts = {
 
 -- Module functionality =======================================================
 
+---@param formatter fun(data: HarpoonLineData, opts?: table):string
+---@param opts table
+---@return function
 Harpoonline.gen_formatter = function(formatter, opts)
   return function() return formatter(H.data, opts) end
 end
 
+---@return string
 Harpoonline.format = function() return H.formatter and H.formatter() or '' end
 
+---@return boolean
 Harpoonline.is_buffer_harpooned = function() return H.data.buffer_idx > 0 end
 
 -- Helper data ================================================================
 
+---@type HarpoonLineConfig
 H.default_config = vim.deepcopy(Harpoonline.config)
 
 ---@class HarpoonLineData
@@ -87,10 +108,13 @@ H.data = {
   buffer_idx = -1,
 }
 
+---@type fun():string|nil
 H.formatter = nil
 
 -- Helper functionality =======================================================
 
+---@param config? HarpoonLineConfig
+---@return HarpoonLineConfig
 H.setup_config = function(config)
   vim.validate({ config = { config, 'table', true } })
   config = vim.tbl_deep_extend('force', vim.deepcopy(H.default_config), config or {})
@@ -103,6 +127,7 @@ H.setup_config = function(config)
   return config
 end
 
+---@param config HarpoonLineConfig
 H.apply_config = function(config)
   if config.custom_formatter then
     H.formatter = config.custom_formatter
@@ -114,6 +139,7 @@ H.apply_config = function(config)
   Harpoonline.config = config
 end
 
+---@return HarpoonLineConfig
 H.get_config = function() return Harpoonline.config end
 
 H.create_autocommands = function()
@@ -137,6 +163,7 @@ end
 
 H.get_list = function() return Harpoon:list(H.data.list_name) end
 
+---@return number
 H.buffer_idx = function()
   -- For more information see ":h buftype"
   local not_found = -1
