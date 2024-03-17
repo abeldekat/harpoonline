@@ -29,12 +29,8 @@ Harpoonline.formatters = {
 		--          ╭─────────────────────────────────────────────────────────╮
 		--          │             credits letieu/harpoon-lualine              │
 		--          ╰─────────────────────────────────────────────────────────╯
-		local name = string.format("%s %s", opts.icon, data.list_name and data.list_name or opts.default_list_name)
-		if data.list_length == 0 then
-			return name
-		end
+		local prefix = string.format("%s %s", opts.icon, data.list_name and data.list_name or opts.default_list_name)
 
-		-- local length = math.min(data.list_length, #opts.indicators)
 		local length = #opts.indicators
 		local status = {}
 		for i = 1, length do
@@ -48,7 +44,7 @@ Harpoonline.formatters = {
 			end
 			table.insert(status, indicator)
 		end
-		return name .. " " .. table.concat(status, " ")
+		return prefix .. " " .. table.concat(status, " ")
 	end,
 }
 
@@ -65,6 +61,10 @@ Harpoonline.gen_formatter = function(formatter, opts)
 	return function()
 		return formatter(H.data, opts)
 	end
+end
+
+Harpoonline.format = function()
+	return H.get_config().formatter()
 end
 
 Harpoonline.is_buffer_harpooned = function()
@@ -100,7 +100,7 @@ H.apply_config = function(config)
 	Harpoonline.config = config
 end
 
-H.get_config = function()
+H.get_config = function() -- currently no vim.b overrides
 	return Harpoonline.config
 end
 
