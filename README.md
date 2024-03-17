@@ -127,7 +127,7 @@ The following configuration is implied when calling `setup` without arguments:
 ```lua
 ---@class HarpoonLineConfig
 Harpoonline.config = {
-  icon = '󰀱', --   󱡅
+  icon = '󰀱',
   default_list_name = '',
   formatter = 'extended', -- the default formatter
 
@@ -137,6 +137,8 @@ Harpoonline.config = {
   on_update = nil,
 }
 ```
+
+*Note*: The icon does not display properly in the browser...
 
 ### Formatters
 
@@ -151,17 +153,17 @@ Harpoonline.config = {
 }
 ```
 
-Output A: `󰀱 [3]`
+Output A: :anchor:  `[3]`
 
-Output B: `󰀱 [2|3]`
+Output B: :anchor:  `[2|3]`
 
 #### Extended, builtin
 
 The default
 
-Output A: `󰀱 1 2 3 -`
+Output A: :anchor:  `1 2 3 -`
 
-Output B: `󰀱 1 [2] 3 -`
+Output B: :anchor:  `1 [2] 3 -`
 
 #### Modify a builtin
 
