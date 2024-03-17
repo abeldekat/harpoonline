@@ -12,6 +12,7 @@ Harpoonline.setup = function(config)
 
 	H.create_autocommands()
 	H.create_extensions()
+	return Harpoonline
 end
 
 Harpoonline.formatters = {
@@ -108,8 +109,7 @@ H.create_autocommands = function()
 
 	vim.api.nvim_create_autocmd("User", {
 		group = augroup,
-		once = true,
-		pattern = "HarpoonActiveListName",
+		pattern = "HarpoonSwitchedList",
 		callback = function(event)
 			H.data.list_name = event.data
 			H.update()
@@ -170,9 +170,9 @@ end
 H.default_formatter = Harpoonline.gen_formatter(Harpoonline.formatters.extended, {
 	icon = "󰀱",
 	default_list_name = "", -- harpoon's default list is nil...
-	indicators = { " 1 ", " 2", " 3 ", " 4 " },
+	indicators = { "1", "2", "3", "4" },
 	active_indicators = { "[1]", "[2]", "[3]", "[4]" },
-	empty_slot = " - ",
+	empty_slot = "-",
 })
 
 return Harpoonline
