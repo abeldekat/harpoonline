@@ -56,9 +56,9 @@ FEATURES                                    *harpoonline-harpoonline-features*
 - Resilience: The formatter will return an empty string when harpoon is not present.
 - Performance/efficiency: The data is cached and _only_ updated when needed.
 
-_Note_
+_Note_:
 
-Withoutcaching the info needed from harpoon must be retrieved whenever a
+Without caching the info needed from harpoon must be retrieved whenever a
 status-line updates. Typically, this happens often:
 
 - When navigating inside a buffer
@@ -78,8 +78,9 @@ REQUIREMENTS                            *harpoonline-harpoonline-requirements*
 
 SETUP                                          *harpoonline-harpoonline-setup*
 
-**Important**don’t forget to call `require('harpoonline').setup()` to enable
-the plugin. Without that call, the formatter will return an empty string.
+**Important**: don’t forget to call `require('harpoonline').setup()` to
+enable the plugin. Without that call, the formatter will return an empty
+string.
 
 
 USING LAZY.NVIM AND LUALINE ~
@@ -183,7 +184,7 @@ The following configuration is implied when calling `setup` without arguments:
     }
 <
 
-_Note_The icon does not display properly in the browser…
+_Note_: The icon does not display properly in the browser…
 
 
 FORMATTERS ~
@@ -202,18 +203,18 @@ THE “SHORT” BUILTIN
     }
 <
 
-Output A: `[3]`
+Output A: :anchor: `[3]`
 
-Output B: `[2|3]`
+Output B: :anchor: `[2|3]`
 
 
 THE “EXTENDED” BUILTIN
 
 The default
 
-Output A: `1 2 3 -`
+Output A: :anchor: `1 2 3 -`
 
-Output B: `1 [2] 3 -`
+Output B: :anchor: `1 [2] 3 -`
 
 
 MODIFY A BUILTIN
@@ -221,7 +222,7 @@ MODIFY A BUILTIN
 Builtin formatters: `Harpoonline.formatters` The corresponding formatter
 specific options: `Harpoonline.formatter_opts`
 
-Modify "extended"
+Modify "extended":
 
 >lua
     local Harpoonline = require("harpoonline")
@@ -233,9 +234,9 @@ Modify "extended"
     })
 <
 
-OutputA: `j k l -`
+Output A: :anchor: `j k l -`
 
-Output B: `j K l -`
+Output B: :anchor: `j K l -`
 
 
 USE A CUSTOM FORMATTER
@@ -273,9 +274,9 @@ Example:
     })
 <
 
-Output A: `-`
+Output A: :arrow_right: `-`
 
-Output B: `2`
+Output B: :arrow_right: `2`
 
 
 HARPOON LISTS                          *harpoonline-harpoonline-harpoon-lists*
@@ -320,9 +321,9 @@ grapple.nvim <https://github.com/cbochs/grapple.nvim>
 
 ACKNOWLEDGEMENTS                    *harpoonline-harpoonline-acknowledgements*
 
-- @theprimeagenHarpoon is the most important part of my workflow.
-- @echasnovskiThe structure of this plugin is heavily based on mini.nvim <https://github.com/echasnovski/mini.nvim>
-- @letieuThe `extended` formatter is inspired by plugin harpoon-lualine <https://github.com/letieu/harpoon-lualine>
+- @theprimeagen: Harpoon is the most important part of my workflow.
+- @echasnovski: The structure of this plugin is heavily based on mini.nvim <https://github.com/echasnovski/mini.nvim>
+- @letieu: The `extended` formatter is inspired by plugin harpoon-lualine <https://github.com/letieu/harpoon-lualine>
 
 ==============================================================================
 2. Links                                                   *harpoonline-links*
