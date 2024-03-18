@@ -21,18 +21,6 @@ a status-line updates. Typically, this happens often:
 - When navigating inside a buffer
 - When editing text inside a buffer
 
-*Note*:
-
-The following data is kept up-to-date internally to be consumed by formatters:
-
-```lua
----@class HarpoonLineData
-H.data = {
-  list_name = nil, -- the name of the list in use
-  list_length = 0, -- the length of the list
-  buffer_idx = -1, -- the harpoon index of the current buffer if harpooned
-}
-```
 
 ## Requirements
 
@@ -127,14 +115,14 @@ The following configuration is implied when calling `setup` without arguments:
 ```lua
 ---@class HarpoonLineConfig
 Harpoonline.config = {
-  icon = '󰀱',
-  default_list_name = '',
-  formatter = 'extended', -- the default formatter
+  icon = '󰀱', -- the icon is allowed to be nil
+  default_list_name = '', -- harpoon's default list is retrieved using nil
+  formatter = 'extended', -- use a builtin formatter
 
   ---@type fun():string|nil
   custom_formatter = nil, -- use this formatter when supplied
   ---@type fun()|nil
-  on_update = nil,
+  on_update = nil, -- optional action to perform after update
 }
 ```
 
@@ -145,11 +133,11 @@ Harpoonline.config = {
 - Situation A: 3 harpoons, the current buffer is not harpooned
 - Situation B: 3 harpoons, the current buffer is harpooned on index 2
 
-#### Simple, builtin
+#### The "short" builtin
 
 ```lua
 Harpoonline.config = {
-  formatter = 'simple',
+  formatter = 'short',
 }
 ```
 
@@ -157,7 +145,7 @@ Output A: :anchor:  `[3]`
 
 Output B: :anchor:  `[2|3]`
 
-#### Extended, builtin
+#### The "extended" builtin
 
 The default
 
@@ -167,11 +155,63 @@ Output B: :anchor:  `1 [2] 3 -`
 
 #### Modify a builtin
 
-WIP
+Builtin formatters: `Harpoonline.formatters`
+The corresponding formatter specific options: `Harpoonline.formatter_opts`
+
+Modify "extended":
+
+```lua
+local Harpoonline = require("harpoonline")
+Harpoonline.setup({
+  custom_formatter = Harpoonline.gen_override("extended", {
+    indicators = { "j", "k", "l", "h" },
+    active_indicators = { "J", "K", "L", "H" },
+  }),
+})
+```
+
+Output A: :anchor:  `j k l -`
+
+Output B: :anchor:  `j K l -`
 
 #### Use a custom formatter
 
-WIP
+The following data is kept up-to-date internally to be consumed by formatters:
+
+```lua
+---@class HarpoonLineData
+H.data = {
+  --- @type string|nil
+  list_name = nil, -- the name of the list in use
+  --- @type number|nil
+  list_length = 0, -- the length of the list
+  --- @type number|nil
+  buffer_idx = nil, -- the harpoon index of the current buffer if harpooned
+}
+```
+
+Example:
+
+```lua
+local Harpoonline = require("harpoonline")
+Harpoonline.setup({
+  custom_formatter = Harpoonline.gen_formatter(
+    function(data, _)
+      return string.format(
+        "%s%s%s",
+        "➡️ ",
+        data.list_name and string.format("%s ", data.list_name) or "",
+        data.buffer_idx and string.format("%d", data.buffer_idx) or "-"
+      )
+    end,
+    {}
+  ),
+})
+```
+
+Output A: :arrow_right:  `-`
+
+Output B: :arrow_right:  `2`
 
 ## Harpoon lists
 
