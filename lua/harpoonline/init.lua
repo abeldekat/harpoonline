@@ -1,8 +1,8 @@
 -- Module definition ==========================================================
 
 -- suitable icons: "󰀱", "", "󱡅"
-local Harpoon = require('harpoon')
-local Extensions = require('harpoon.extensions')
+local has_harpoon, Harpoon = pcall(require, 'harpoon')
+local _, Extensions = pcall(require, 'harpoon.extensions')
 
 ---@class HarpoonLine
 local Harpoonline = {}
@@ -11,11 +11,13 @@ local H = {}
 ---@param config? HarpoonLineConfig
 ---@return HarpoonLine
 Harpoonline.setup = function(config)
-  config = H.setup_config(config)
-  H.apply_config(config)
+  if has_harpoon then
+    config = H.setup_config(config)
+    H.apply_config(config)
 
-  H.create_autocommands()
-  H.create_extensions()
+    H.create_autocommands()
+    H.create_extensions()
+  end
   return Harpoonline
 end
 
@@ -124,14 +126,14 @@ Harpoonline.gen_override = function(builtin, opts)
   return Harpoonline.gen_formatter(Harpoonline.formatters[key], opts)
 end
 
--- The function to be used by statuslines
----@return string
-Harpoonline.format = function() return H.formatter and H.formatter() or '' end
-
 -- Return true is the current buffer is harpooned, false otherwise
 -- Useful for extra highlighting code
 ---@return boolean
 Harpoonline.is_buffer_harpooned = function() return H.data.buffer_idx and true or false end
+
+-- The function to be used by statuslines
+---@return string
+Harpoonline.format = function() return H.formatter and H.formatter() or '' end
 
 -- Helper data ================================================================
 

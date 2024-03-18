@@ -31,6 +31,7 @@ WIP
 - Supports multiple [harpoon2] lists.
 - Highly configurable: Use or modify default formatters or supply a custom formatter
 - Decoupled from status-line: Can be used anywhere.
+- Resilience: The formatter will return an empty string when harpoon is not present.
 - Performance/efficiency: The data is cached and *only* updated when needed.
 
 *Note*:
@@ -52,6 +53,10 @@ a status-line updates. Typically, this happens often:
   - a custom implementation
 
 ## Setup
+
+**Important**: don't forget to call `require('harpoonline').setup()`
+to enable the plugin. Without that call, the formatter will return
+an empty string.
 
 ### Using lazy.nvim and lualine
 
