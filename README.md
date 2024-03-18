@@ -252,7 +252,7 @@ This plugin provides support for working with multiple harpoon lists.
 
 The list in use when Neovim is started is assumed to be the default list
 
-When switching to another list, the plugin needs to be notified
+The plugin needs to be notified when switching to another list
 using its custom `HarpoonSwitchedList` event:
 
 ```lua
