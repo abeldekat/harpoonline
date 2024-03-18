@@ -1,0 +1,336 @@
+*harpoonline.txt*        For Neovim >= 0.9.0        Last change: 2024 March 18
+
+==============================================================================
+Table of Contents                              *harpoonline-table-of-contents*
+
+1. Harpoonline                                       |harpoonline-harpoonline|
+  - TOC                                          |harpoonline-harpoonline-toc|
+  - Demo                                        |harpoonline-harpoonline-demo|
+  - Features                                |harpoonline-harpoonline-features|
+  - Requirements                        |harpoonline-harpoonline-requirements|
+  - Setup                                      |harpoonline-harpoonline-setup|
+  - Configuration                      |harpoonline-harpoonline-configuration|
+  - Harpoon lists                      |harpoonline-harpoonline-harpoon-lists|
+  - Related plugins                  |harpoonline-harpoonline-related-plugins|
+  - Acknowledgements                |harpoonline-harpoonline-acknowledgements|
+
+==============================================================================
+1. Harpoonline                                       *harpoonline-harpoonline*
+
+Create up-to-date harpoon2
+<https://github.com/ThePrimeagen/harpoon/tree/harpoon2> information to be used
+in a status-line
+
+
+TOC                                              *harpoonline-harpoonline-toc*
+
+- |harpoonline-harpoonline|
+    - |harpoonline-demo|
+    - |harpoonline-features|
+    - |harpoonline-requirements|
+    - |harpoonline-setup|
+        - |harpoonline-using-lazy.nvim-and-lualine|
+        - |harpoonline-using-mini.deps-and-mini.statusline|
+    - |harpoonline-configuration|
+        - |harpoonline-formatters|
+            - |harpoonline-the-"short"-builtin|
+            - |harpoonline-the-"extended"-builtin|
+            - |harpoonline-modify-a-builtin|
+            - |harpoonline-use-a-custom-formatter|
+    - |harpoonline-harpoon-lists|
+    - |harpoonline-related-plugins|
+    - |harpoonline-acknowledgements|
+
+
+DEMO                                            *harpoonline-harpoonline-demo*
+
+
+<https://github.com/abeldekat/harpoonline/assets/58370433/ec56eeb2-3cbf-46fe-bc9d-633f6aa8bb9b>
+
+
+FEATURES                                    *harpoonline-harpoonline-features*
+
+- Supports multiple harpoon2 <https://github.com/ThePrimeagen/harpoon/tree/harpoon2> lists.
+- Highly configurable: Use or modify default formatters or supply a custom formatter
+- Decoupled from status-line: Can be used anywhere.
+- Resilience: The formatter will return an empty string when harpoon is not present.
+- Performance/efficiency: The data is cached and _only_ updated when needed.
+
+_Note_
+
+Withoutcaching the info needed from harpoon must be retrieved whenever a
+status-line updates. Typically, this happens often:
+
+- When navigating inside a buffer
+- When editing text inside a buffer
+
+
+REQUIREMENTS                            *harpoonline-harpoonline-requirements*
+
+- Latest stable `Neovim` version or nightly
+- harpoon2 <https://github.com/ThePrimeagen/harpoon/tree/harpoon2>
+- a statusline, for example:
+    - mini.statusline <https://github.com/echasnovski/mini.statusline>
+    - lualine <https://github.com/nvim-lualine/lualine.nvim>
+    - heirline <https://github.com/rebelot/heirline.nvim>
+    - a custom implementation
+
+
+SETUP                                          *harpoonline-harpoonline-setup*
+
+**Important**don’t forget to call `require('harpoonline').setup()` to enable
+the plugin. Without that call, the formatter will return an empty string.
+
+
+USING LAZY.NVIM AND LUALINE ~
+
+>lua
+    {
+        "nvim-lualine/lualine.nvim",
+        dependencies =  "abeldekat/harpoonline",
+        config = function()
+          local Harpoonline = require("harpoonline").setup() -- using default config
+          local lualine_c = { Harpoonline.format, "filename" }
+    
+          require("lualine").setup({
+            sections = {
+              lualine_c = lualine_c,
+            },
+          })
+        end,
+    }
+<
+
+
+USING MINI.DEPS AND MINI.STATUSLINE ~
+
+>lua
+    local function config()
+      local MiniStatusline = require("mini.statusline")
+      local HarpoonLine= require("harpoonline")
+    
+    
+      local function isnt_normal_buffer()
+        return vim.bo.buftype ~= ""
+      end
+      local function harpoon_highlight() -- example using mini.hipatterns:
+        return Harpoonline.is_buffer_harpooned() and "MiniHipatternsHack"
+          or "MiniStatuslineFilename" ----> highlight when a buffer is harpooned
+      end
+      local function section_harpoon(args)
+        if MiniStatusline.is_truncated(args.trunc_width)
+          or isnt_normal_buffer() then
+          return ""
+        end
+        return Harpoonline.format() ---->  produce the info
+      end
+      local function active() -- adding a harpoon section:
+        -- copy lines from mini.statusline, H.default_content_active:
+        -- ...
+        local harpoon_data = section_harpoon({ trunc_width = 75 })
+        -- ...
+      
+        return MiniStatusline.combine_groups({
+          -- copy lines from mini.statusline, H.default_content_active:
+          -- ...
+          { hl = H.harpoon_highlight(), strings = { harpoon_data } },
+          -- ...
+        })
+      end
+    
+      HarpoonLine.setup({
+        on_update = function()
+          vim.wo.statusline = "%!v:lua.MiniStatusline.active()"
+        end
+      })
+      MiniStatusline.setup({
+        set_vim_settings = false,
+        content = { active = active },
+      })
+    end
+    
+    local MiniDeps = require("mini.deps")
+    local add, now = MiniDeps.add, MiniDeps.now
+    now(function()
+      add({ source = "echasnovski/mini.statusline", depends = {"abeldekat/harpoonline"}})
+      config()
+    end
+<
+
+
+CONFIGURATION                          *harpoonline-harpoonline-configuration*
+
+The following configuration is implied when calling `setup` without arguments:
+
+>lua
+    ---@class HarpoonLineConfig
+    Harpoonline.config = {
+      ---@type string|nil
+      icon = '󰀱',
+    
+      -- As harpoon's default list is retrieved without a name,
+      -- default_list_name configures the name to be displayed
+      ---@type string
+      default_list_name = '',
+    
+      ---@type string
+      formatter = 'extended', -- use a builtin formatter
+    
+      ---@type fun():string|nil
+      custom_formatter = nil, -- use this formatter when supplied
+      ---@type fun()|nil
+      on_update = nil, -- optional action to perform after update
+    }
+<
+
+_Note_The icon does not display properly in the browser…
+
+
+FORMATTERS ~
+
+Scenario’s:
+
+- A: 3 harpoons, the current buffer is not harpooned
+- B: 3 harpoons, the current buffer is harpooned on mark 2
+
+
+THE “SHORT” BUILTIN
+
+>lua
+    Harpoonline.config = {
+      formatter = 'short',
+    }
+<
+
+Output A: `[3]`
+
+Output B: `[2|3]`
+
+
+THE “EXTENDED” BUILTIN
+
+The default
+
+Output A: `1 2 3 -`
+
+Output B: `1 [2] 3 -`
+
+
+MODIFY A BUILTIN
+
+Builtin formatters: `Harpoonline.formatters` The corresponding formatter
+specific options: `Harpoonline.formatter_opts`
+
+Modify "extended"
+
+>lua
+    local Harpoonline = require("harpoonline")
+    Harpoonline.setup({
+      custom_formatter = Harpoonline.gen_override("extended", {
+        indicators = { "j", "k", "l", "h" },
+        active_indicators = { "J", "K", "L", "H" },
+      }),
+    })
+<
+
+OutputA: `j k l -`
+
+Output B: `j K l -`
+
+
+USE A CUSTOM FORMATTER
+
+The following data is kept up-to-date internally to be consumed by formatters:
+
+>lua
+    ---@class HarpoonLineData
+    H.data = {
+      --- @type string|nil
+      list_name = nil, -- the name of the list in use
+      --- @type number
+      list_length = 0, -- the length of the list
+      --- @type number|nil
+      buffer_idx = nil, -- the harpoon index of the current buffer if harpooned
+    }
+<
+
+Example:
+
+>lua
+    local Harpoonline = require("harpoonline")
+    Harpoonline.setup({
+      custom_formatter = Harpoonline.gen_formatter(
+        function(data, _)
+          return string.format(
+            "%s%s%s",
+            "➡️ ",
+            data.list_name and string.format("%s ", data.list_name) or "",
+            data.buffer_idx and string.format("%d", data.buffer_idx) or "-"
+          )
+        end,
+        {}
+      ),
+    })
+<
+
+Output A: `-`
+
+Output B: `2`
+
+
+HARPOON LISTS                          *harpoonline-harpoonline-harpoon-lists*
+
+This plugin provides support for working with multiple harpoon lists.
+
+The list in use when Neovim is started is assumed to be the default list
+
+When switching to another list, the plugin needs to be notified using its
+custom `HarpoonSwitchedList` event:
+
+>lua
+    local list_name = nil -- starts with the default
+    
+    vim.keymap.set("n", "<leader>J", function()
+      -- toggle between the current list and list "custom"
+      list_name = list_name ~= "custom" and "custom" or nil
+      vim.api.nvim_exec_autocmds("User",
+        { pattern = "HarpoonSwitchedList", modeline = false, data = list_name })
+    end, { desc = "Switch harpoon list", silent = true })
+<
+
+For a more complete example using two harpoon lists, see
+ak.config.editor.harpoon
+<https://github.com/abeldekat/nvim_pde/blob/main/lua/ak/config/editor/harpoon.lua>
+in my Neovim configuration.
+
+
+RELATED PLUGINS                      *harpoonline-harpoonline-related-plugins*
+
+harpoon-lualine <https://github.com/letieu/harpoon-lualine>
+
+- Dedicated to lualine <https://github.com/nvim-lualine/lualine.nvim>
+- A single, customizable formatting algorithm
+- No caching
+- No support for other lists than the default
+
+grapple.nvim <https://github.com/cbochs/grapple.nvim>
+
+- Has a similar dedicated lualine component as harpoon-lualine
+
+
+ACKNOWLEDGEMENTS                    *harpoonline-harpoonline-acknowledgements*
+
+- @theprimeagenHarpoon is the most important part of my workflow.
+- @echasnovskiThe structure of this plugin is heavily based on mini.nvim <https://github.com/echasnovski/mini.nvim>
+- @letieuThe `extended` formatter is inspired by plugin harpoon-lualine <https://github.com/letieu/harpoon-lualine>
+
+==============================================================================
+2. Links                                                   *harpoonline-links*
+
+1. *@theprimeagen*: 
+2. *@echasnovski*: 
+3. *@letieu*: 
+
+Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
+
+vim:tw=78:ts=8:noet:ft=help:norl:
