@@ -271,16 +271,16 @@ in my Neovim configuration.
 
 ## Related plugins
 
-[harpoon-lualine]:
+[harpoon-lualine]
 
 - Dedicated to [lualine]
 - A single, customizable formatting algorithm
 - No caching
 - No support for other lists than the default
 
-[grapple.nvim]:
+[grapple.nvim]
 
-- Has a similar dedicated lualine component as [harpoon-lualine]
+- Has a similar dedicated lualine component as harpoon-lualine
 
 ## Acknowledgements
 
