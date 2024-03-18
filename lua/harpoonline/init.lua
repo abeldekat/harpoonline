@@ -142,11 +142,11 @@ H.default_config = vim.deepcopy(Harpoonline.config)
 
 ---@class HarpoonLineData
 H.data = {
-  --- @type string?
+  --- @type string|nil
   list_name = nil, -- the name of the list in use
   --- @type number
   list_length = 0, -- the length of the list
-  --- @type number?
+  --- @type number|nil
   buffer_idx = nil, -- the harpoon index of the current buffer if harpooned
 }
 
@@ -214,7 +214,7 @@ H.get_list = function() return Harpoon:list(H.data.list_name) end
 
 -- If the current buffer is harpooned, return the index of the mark in harpoon's list
 -- Otherwise, return nil
----@return number?
+---@return number|nil
 H.buffer_idx = function()
   if vim.bo.buftype ~= '' then return end -- not a normal buffer
 

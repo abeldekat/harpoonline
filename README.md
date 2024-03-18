@@ -216,7 +216,7 @@ The following data is kept up-to-date internally to be consumed by formatters:
 H.data = {
   --- @type string|nil
   list_name = nil, -- the name of the list in use
-  --- @type number|nil
+  --- @type number
   list_length = 0, -- the length of the list
   --- @type number|nil
   buffer_idx = nil, -- the harpoon index of the current buffer if harpooned
@@ -273,10 +273,10 @@ in my Neovim configuration.
 
 [harpoon-lualine]:
 
-- Only for [lualine]
+- Dedicated to [lualine]
 - A single, customizable formatting algorithm
 - No caching
-- Only supports harpoon's default list
+- No support for other lists than the default
 
 [grapple.nvim]:
 
