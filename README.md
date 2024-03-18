@@ -24,7 +24,11 @@ Create up-to-date [harpoon2] information to be used in a status-line
 
 ## Demo
 
-WIP
+
+
+https://github.com/abeldekat/harpoonline/assets/58370433/ec56eeb2-3cbf-46fe-bc9d-633f6aa8bb9b
+
+
 
 ## Features
 
