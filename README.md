@@ -2,6 +2,26 @@
 
 Create up-to-date [harpoon2] information to be used in a status-line
 
+## TOC
+<!--toc:start-->
+- [Harpoonline](#harpoonline)
+  - [Demo](#demo)
+  - [Features](#features)
+  - [Requirements](#requirements)
+  - [Setup](#setup)
+    - [Using lazy.nvim and lualine](#using-lazynvim-and-lualine)
+    - [Using mini.deps and mini.statusline](#using-minideps-and-ministatusline)
+  - [Configuration](#configuration)
+    - [Formatters](#formatters)
+      - [The "short" builtin](#the-short-builtin)
+      - [The "extended" builtin](#the-extended-builtin)
+      - [Modify a builtin](#modify-a-builtin)
+      - [Use a custom formatter](#use-a-custom-formatter)
+  - [Harpoon lists](#harpoon-lists)
+  - [Related plugins](#related-plugins)
+  - [Acknowledgements](#acknowledgements)
+<!--toc:end-->
+
 ## Demo
 
 WIP
@@ -20,7 +40,6 @@ a status-line updates. Typically, this happens often:
 
 - When navigating inside a buffer
 - When editing text inside a buffer
-
 
 ## Requirements
 
@@ -115,8 +134,15 @@ The following configuration is implied when calling `setup` without arguments:
 ```lua
 ---@class HarpoonLineConfig
 Harpoonline.config = {
-  icon = '󰀱', -- the icon is allowed to be nil
-  default_list_name = '', -- harpoon's default list is retrieved using nil
+  ---@type string|nil
+  icon = '󰀱',
+
+  -- As harpoon's default list is retrieved without a name,
+  -- default_list_name configures the name to be displayed
+  ---@type string
+  default_list_name = '',
+
+  ---@type string
   formatter = 'extended', -- use a builtin formatter
 
   ---@type fun():string|nil
@@ -130,8 +156,10 @@ Harpoonline.config = {
 
 ### Formatters
 
-- Situation A: 3 harpoons, the current buffer is not harpooned
-- Situation B: 3 harpoons, the current buffer is harpooned on index 2
+Scenario's:
+
+- A: 3 harpoons, the current buffer is not harpooned
+- B: 3 harpoons, the current buffer is harpooned on mark 2
 
 #### The "short" builtin
 
@@ -215,13 +243,26 @@ Output B: :arrow_right:  `2`
 
 ## Harpoon lists
 
-WIP
+This plugin provides support for working with multiple harpoon lists.
 
-## Acknowledgements
+The list in use when Neovim is started is assumed to be the default list
 
-- @theprimeagen: Harpoon is the most important part of my workflow.
-- @echasnovski: The structure of this plugin is heavily based on [mini.nvim]
-- @letieu: The `extended` formatter is based on plugin [harpoon-lualine]
+When switching to another list, the plugin needs to be notified
+using its custom `HarpoonSwitchedList` event:
+
+```lua
+local list_name = nil -- starts with the default
+
+vim.keymap.set("n", "<leader>J", function()
+  -- toggle between the current list and list "custom"
+  list_name = list_name ~= "custom" and "custom" or nil
+  vim.api.nvim_exec_autocmds("User",
+    { pattern = "HarpoonSwitchedList", modeline = false, data = list_name })
+end, { desc = "Switch harpoon list", silent = true })
+```
+
+For a more complete example using two harpoon lists, see [ak.config.editor.harpoon]
+in my Neovim configuration.
 
 ## Related plugins
 
@@ -236,6 +277,12 @@ WIP
 
 - Has a similar dedicated lualine component as [harpoon-lualine]
 
+## Acknowledgements
+
+- @theprimeagen: Harpoon is the most important part of my workflow.
+- @echasnovski: The structure of this plugin is heavily based on [mini.nvim]
+- @letieu: The `extended` formatter is inspired by plugin [harpoon-lualine]
+
 [harpoon2]: https://github.com/ThePrimeagen/harpoon/tree/harpoon2
 [mini.statusline]: https://github.com/echasnovski/mini.statusline
 [lualine]: https://github.com/nvim-lualine/lualine.nvim
@@ -243,3 +290,4 @@ WIP
 [mini.nvim]: https://github.com/echasnovski/mini.nvim
 [harpoon-lualine]: https://github.com/letieu/harpoon-lualine
 [grapple.nvim]: https://github.com/cbochs/grapple.nvim
+[ak.config.editor.harpoon]: https://github.com/abeldekat/nvim_pde/blob/main/lua/ak/config/editor/harpoon.lua

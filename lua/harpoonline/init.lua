@@ -21,12 +21,20 @@ end
 
 ---@class HarpoonLineConfig
 Harpoonline.config = {
-  icon = '󰀱', --   󱡅 -- the icon is allowed to be nil
-  default_list_name = '', -- harpoon's default list is retrieved using nil
+  ---@type string|nil
+  icon = '󰀱',
+
+  -- As harpoon's default list is retrieved without a name,
+  -- default_list_name configures the name to be displayed
+  ---@type string
+  default_list_name = '',
+
+  ---@type string
   formatter = 'extended', -- use a builtin formatter
 
   ---@type fun():string|nil
   custom_formatter = nil, -- use this formatter when supplied
+  ---@type fun()|nil
   on_update = nil, -- optional action to perform after update
 }
 
