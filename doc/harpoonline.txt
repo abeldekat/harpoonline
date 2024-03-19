@@ -1,16 +1,16 @@
-*harpoonline.txt*        For Neovim >= 0.9.0        Last change: 2024 March 18
+*harpoonline.txt*        For Neovim >= 0.9.0        Last change: 2024 March 19
 
 ==============================================================================
 Table of Contents                              *harpoonline-table-of-contents*
 
 1. Harpoonline                                       |harpoonline-harpoonline|
   - TOC                                          |harpoonline-harpoonline-toc|
-  - Demo                                        |harpoonline-harpoonline-demo|
   - Features                                |harpoonline-harpoonline-features|
   - Requirements                        |harpoonline-harpoonline-requirements|
   - Setup                                      |harpoonline-harpoonline-setup|
   - Configuration                      |harpoonline-harpoonline-configuration|
   - Harpoon lists                      |harpoonline-harpoonline-harpoon-lists|
+  - Recipes                                  |harpoonline-harpoonline-recipes|
   - Related plugins                  |harpoonline-harpoonline-related-plugins|
   - Acknowledgements                |harpoonline-harpoonline-acknowledgements|
 
@@ -38,11 +38,11 @@ TOC                                              *harpoonline-harpoonline-toc*
             - |harpoonline-modify-a-builtin|
             - |harpoonline-use-a-custom-formatter|
     - |harpoonline-harpoon-lists|
+    - |harpoonline-recipes|
+        - |harpoonline-heirline|
     - |harpoonline-related-plugins|
     - |harpoonline-acknowledgements|
-
-
-DEMO                                            *harpoonline-harpoonline-demo*
+        ## Demo
 
 
 <https://github.com/abeldekat/harpoonline/assets/58370433/ec56eeb2-3cbf-46fe-bc9d-633f6aa8bb9b>
@@ -303,6 +303,60 @@ For a more complete example using two harpoon lists, see
 ak.config.editor.harpoon
 <https://github.com/abeldekat/nvim_pde/blob/main/lua/ak/config/editor/harpoon.lua>
 in my Neovim configuration.
+
+
+RECIPES                                      *harpoonline-harpoonline-recipes*
+
+
+HEIRLINE ~
+
+Basic example:
+
+>lua
+    local Harpoonline = require("harpoonline").setup({
+      on_update = function() vim.cmd.redrawstatus() end
+    })
+    local HarpoonComponent = {
+      provider = function() return " " .. Harpoonline.format() .. " " end,
+      hl = function()
+        if Harpoonline.is_buffer_harpooned() then 
+          return "MiniHipatternsHack"-- example using mini.hipatterns
+        end
+      end,
+    }
+    -- A minimal statusline:
+    require("heirline").setup({ statusline = { HarpoonComponent }})
+<
+
+A proof of concept for AstroNvim version 4: ~
+
+>lua
+    {
+      "rebelot/heirline.nvim",
+      dependencies = "abeldekat/harpoonline",
+      config = function(plugin, opts)
+        local Status = require "astroui.status"
+        local Harpoonline = require("harpoonline").setup {
+          on_update = function() vim.cmd.redrawstatus() end,
+        }
+        local HarpoonComponent = Status.component.builder {
+          {
+            provider = function()
+              local line = Harpoonline.format()
+              return Status.utils.stylize(line, { padding = { left = 1, right = 1 }})
+            end,
+            hl = function()
+              if Harpoonline.is_buffer_harpooned() then
+                  return { bg = "command", fg = "bg" }
+              end
+            end,
+          },
+        }
+        table.insert(opts.statusline, 4, HarpoonComponent) -- after file_info component
+        require "astronvim.plugins.configs.heirline"(plugin, opts)
+      end,
+    }
+<
 
 
 RELATED PLUGINS                      *harpoonline-harpoonline-related-plugins*
