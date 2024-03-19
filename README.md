@@ -64,7 +64,7 @@ an empty string.
 ```lua
 {
     "nvim-lualine/lualine.nvim",
-    dependencies =  "abeldekat/harpoonline",
+    dependencies =  { "abeldekat/harpoonline", version = "*" },
     config = function()
       local Harpoonline = require("harpoonline").setup() -- using default config
       local lualine_c = { Harpoonline.format, "filename" }
