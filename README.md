@@ -18,10 +18,11 @@ Create up-to-date [harpoon2] information to be used in a status-line
       - [Modify a builtin](#modify-a-builtin)
       - [Use a custom formatter](#use-a-custom-formatter)
   - [Harpoon lists](#harpoon-lists)
+  - [Recipes](#recipes)
+    - [Heirline](#heirline)
   - [Related plugins](#related-plugins)
   - [Acknowledgements](#acknowledgements)
 <!--toc:end-->
-
 ## Demo
 
 <https://github.com/abeldekat/harpoonline/assets/58370433/ec56eeb2-3cbf-46fe-bc9d-633f6aa8bb9b>
@@ -268,6 +269,61 @@ end, { desc = "Switch harpoon list", silent = true })
 
 For a more complete example using two harpoon lists, see [ak.config.editor.harpoon]
 in my Neovim configuration.
+
+## Recipes
+
+### Heirline
+
+Basic example:
+
+```lua
+local Harpoonline = require("harpoonline").setup({
+  on_update = function() vim.cmd.redrawstatus() end
+})
+local HarpoonComponent = {
+  provider = function() return " " .. Harpoonline.format() .. " " end,
+  hl = function()
+    if Harpoonline.is_buffer_harpooned() then 
+      return "MiniHipatternsHack"-- example using mini.hipatterns
+    end
+  end,
+}
+-- A minimal statusline:
+require("heirline").setup({ statusline = { HarpoonComponent }})
+```
+
+<details>
+<summary>A proof of concept for AstroNvim version 4:</summary>
+
+```lua
+{
+  "rebelot/heirline.nvim",
+  dependencies = "abeldekat/harpoonline",
+  config = function(plugin, opts)
+    local Status = require "astroui.status"
+    local Harpoonline = require("harpoonline").setup {
+      on_update = function() vim.cmd.redrawstatus() end,
+    }
+    local HarpoonComponent = Status.component.builder {
+      {
+        provider = function()
+          local line = Harpoonline.format()
+          return Status.utils.stylize(line, { padding = { left = 1, right = 1 }})
+        end,
+        hl = function()
+          if Harpoonline.is_buffer_harpooned() then
+              return { bg = "command", fg = "bg" }
+          end
+        end,
+      },
+    }
+    table.insert(opts.statusline, 4, HarpoonComponent) -- after file_info component
+    require "astronvim.plugins.configs.heirline"(plugin, opts)
+  end,
+}
+```
+
+</details>
 
 ## Related plugins
 
