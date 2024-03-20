@@ -1,10 +1,11 @@
-*harpoonline.txt*        For Neovim >= 0.9.0        Last change: 2024 March 19
+*harpoonline.txt*        For Neovim >= 0.9.0        Last change: 2024 March 20
 
 ==============================================================================
 Table of Contents                              *harpoonline-table-of-contents*
 
 1. Harpoonline                                       |harpoonline-harpoonline|
   - TOC                                          |harpoonline-harpoonline-toc|
+  - Demo                                        |harpoonline-harpoonline-demo|
   - Features                                |harpoonline-harpoonline-features|
   - Requirements                        |harpoonline-harpoonline-requirements|
   - Setup                                      |harpoonline-harpoonline-setup|
@@ -40,12 +41,19 @@ TOC                                              *harpoonline-harpoonline-toc*
     - |harpoonline-harpoon-lists|
     - |harpoonline-recipes|
         - |harpoonline-heirline|
+        - |harpoonline-nvchad-statusline|
     - |harpoonline-related-plugins|
     - |harpoonline-acknowledgements|
-        ## Demo
+
+
+DEMO                                            *harpoonline-harpoonline-demo*
 
 
 <https://github.com/abeldekat/harpoonline/assets/58370433/ec56eeb2-3cbf-46fe-bc9d-633f6aa8bb9b>
+
+Heirline in AstroNvim v4 ~
+
+Custom statusline in NvChad v2.5 ~
 
 
 FEATURES                                    *harpoonline-harpoonline-features*
@@ -69,11 +77,7 @@ REQUIREMENTS                            *harpoonline-harpoonline-requirements*
 
 - Latest stable `Neovim` version or nightly
 - harpoon2 <https://github.com/ThePrimeagen/harpoon/tree/harpoon2>
-- a statusline, for example:
-    - mini.statusline <https://github.com/echasnovski/mini.statusline>
-    - lualine <https://github.com/nvim-lualine/lualine.nvim>
-    - heirline <https://github.com/rebelot/heirline.nvim>
-    - a custom implementation
+- A statusline. Examples: mini.statusline <https://github.com/echasnovski/mini.statusline>, lualine <https://github.com/nvim-lualine/lualine.nvim>, heirline <https://github.com/rebelot/heirline.nvim> or a custom implementation
 
 
 SETUP                                          *harpoonline-harpoonline-setup*
@@ -92,12 +96,7 @@ USING LAZY.NVIM AND LUALINE ~
         config = function()
           local Harpoonline = require("harpoonline").setup() -- using default config
           local lualine_c = { Harpoonline.format, "filename" }
-    
-          require("lualine").setup({
-            sections = {
-              lualine_c = lualine_c,
-            },
-          })
+          require("lualine").setup({ sections = { lualine_c = lualine_c } })
         end,
     }
 <
@@ -110,32 +109,23 @@ USING MINI.DEPS AND MINI.STATUSLINE ~
       local MiniStatusline = require("mini.statusline")
       local HarpoonLine= require("harpoonline")
     
-    
-      local function isnt_normal_buffer()
-        return vim.bo.buftype ~= ""
-      end
-      local function harpoon_highlight() -- example using mini.hipatterns:
+      local function isnt_normal_buffer() return vim.bo.buftype ~= "" end
+      local function harpoon_highlight() -- using mini.hipatterns
         return Harpoonline.is_buffer_harpooned() and "MiniHipatternsHack"
-          or "MiniStatuslineFilename" ----> highlight when a buffer is harpooned
+          or "MiniStatuslineFilename"
       end
       local function section_harpoon(args)
-        if MiniStatusline.is_truncated(args.trunc_width)
-          or isnt_normal_buffer() then
+        if MiniStatusline.is_truncated(args.trunc_width) or isnt_normal_buffer() then
           return ""
         end
         return Harpoonline.format() ---->  produce the info
       end
-      local function active() -- adding a harpoon section:
-        -- copy lines from mini.statusline, H.default_content_active:
-        -- ...
+      local function active() -- Hook, see mini.statusline setup
+        -- copy any lines from mini.statusline, H.default_content_active:
         local harpoon_data = section_harpoon({ trunc_width = 75 })
-        -- ...
-      
         return MiniStatusline.combine_groups({
-          -- copy lines from mini.statusline, H.default_content_active:
-          -- ...
+          -- copy any lines from mini.statusline, H.default_content_active:
           { hl = H.harpoon_highlight(), strings = { harpoon_data } },
-          -- ...
         })
       end
     
@@ -144,10 +134,7 @@ USING MINI.DEPS AND MINI.STATUSLINE ~
           vim.wo.statusline = "%!v:lua.MiniStatusline.active()"
         end
       })
-      MiniStatusline.setup({
-        set_vim_settings = false,
-        content = { active = active },
-      })
+      MiniStatusline.setup({set_vim_settings = false, content = { active = active }})
     end
     
     local MiniDeps = require("mini.deps")
@@ -157,6 +144,9 @@ USING MINI.DEPS AND MINI.STATUSLINE ~
       config()
     end
 <
+
+A custom setup for mini.statusline can be found in ak.config.ui.mini_statusline
+<https://github.com/abeldekat/nvim_pde/blob/main/lua/ak/config/ui/mini_statusline.lua>
 
 
 CONFIGURATION                          *harpoonline-harpoonline-configuration*
@@ -278,6 +268,9 @@ Output A: :arrow_right: `-`
 
 Output B: :arrow_right: `2`
 
+_Note_: You can also use inner highlights in the formatter function. See the
+example recipe for NvChad.
+
 
 HARPOON LISTS                          *harpoonline-harpoonline-harpoon-lists*
 
@@ -299,10 +292,9 @@ The plugin needs to be notified when switching to another list using its custom
     end, { desc = "Switch harpoon list", silent = true })
 <
 
-For a more complete example using two harpoon lists, see
+A complete setup using two harpoon lists can be found in
 ak.config.editor.harpoon
 <https://github.com/abeldekat/nvim_pde/blob/main/lua/ak/config/editor/harpoon.lua>
-in my Neovim configuration.
 
 
 RECIPES                                      *harpoonline-harpoonline-recipes*
@@ -328,7 +320,7 @@ Basic example:
     require("heirline").setup({ statusline = { HarpoonComponent }})
 <
 
-A proof of concept for AstroNvim version 4: ~
+A proof of concept for AstroNvim v4 ~
 
 >lua
     {
@@ -359,6 +351,50 @@ A proof of concept for AstroNvim version 4: ~
 <
 
 
+NVCHAD STATUSLINE ~
+
+A proof of concept for NvChad v2.5 ~
+
+>lua
+    ---@type ChadrcConfig
+    local M = {}
+    
+    -- Add to config.plugins:
+    -- {
+    --     "nvchad/ui",
+    --     dependencies = {
+    --       "abeldekat/harpoonline",
+    --       config = function()
+    --         require("harpoonline").setup {
+    --           on_update = function() vim.cmd.redrawstatus() end,
+    --         }
+    --       end,
+    --     },
+    --   }
+    
+    M.ui = {
+      theme = "flexoki-light",
+    
+      statusline = {
+        theme = "vscode",
+        separator_style = "default",
+        -- Copy local orders.vscode from nvchad.stl.utils in plugin nvchad/ui
+        -- Add string "harpoon" before "file"
+        order = { "mode", "harpoon", "file", "diagnostics", "git",
+          "%=", "lsp_msg", "%=", "lsp", "cursor", "cwd" },
+        modules = {
+          -- Add a custom harpoon module, using the file background.
+          harpoon = function()
+            return "%#St_file_bg# " .. require("harpoonline").format() .. " "
+          end,
+        },
+      },
+    }
+    
+    return M
+<
+
+
 RELATED PLUGINS                      *harpoonline-harpoonline-related-plugins*
 
 harpoon-lualine <https://github.com/letieu/harpoon-lualine>
@@ -382,9 +418,11 @@ ACKNOWLEDGEMENTS                    *harpoonline-harpoonline-acknowledgements*
 ==============================================================================
 2. Links                                                   *harpoonline-links*
 
-1. *@theprimeagen*: 
-2. *@echasnovski*: 
-3. *@letieu*: 
+1. *1710845846*: https://github.com/abeldekat/harpoonline/assets/58370433/9a6ac3fa-2f64-40f1-a3bf-1e5702b49ccc
+2. *1710925071*: https://github.com/abeldekat/harpoonline/assets/58370433/4b911ed1-428d-4a64-ba9d-f67ba6438ce7
+3. *@theprimeagen*: 
+4. *@echasnovski*: 
+5. *@letieu*: 
 
 Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
 
