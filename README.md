@@ -134,8 +134,8 @@ Harpoonline.config = {
   ---@type string|nil
   icon = '󰀱',
 
-  -- As harpoon's default list is retrieved without a name,
-  -- default_list_name configures the name to be displayed
+  -- Harpoon:list() retrieves the default list: The name of the list is nil.
+  -- The name to display can be configured by using default_list_name
   ---@type string
   default_list_name = '',
 
@@ -155,8 +155,8 @@ Harpoonline.config = {
 
 Scenario's:
 
-- A: 3 harpoons, the current buffer is not harpooned
-- B: 3 harpoons, the current buffer is harpooned on mark 2
+- A: 3 marks, the current buffer is not harpooned
+- B: 3 marks, the current buffer is harpooned on mark 2
 
 #### The "short" builtin
 
