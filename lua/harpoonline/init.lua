@@ -17,6 +17,7 @@ Harpoonline.setup = function(config)
 
     H.create_autocommands()
     H.create_extensions()
+    H.update_data()
   end
   return Harpoonline
 end
@@ -26,8 +27,8 @@ Harpoonline.config = {
   ---@type string|nil
   icon = '󰀱',
 
-  -- As harpoon's default list is retrieved without a name,
-  -- default_list_name configures the name to be displayed
+  -- Harpoon:list() retrieves the default list: The name of the list is nil.
+  -- The name to display can be configured by using default_list_name
   ---@type string
   default_list_name = '',
 
@@ -133,7 +134,10 @@ Harpoonline.is_buffer_harpooned = function() return H.data.buffer_idx and true o
 
 -- The function to be used by statuslines
 ---@return string
-Harpoonline.format = function() return H.formatter and H.formatter() or '' end
+Harpoonline.format = function()
+  if not H.cached_result then H.cached_result = H.formatter and H.formatter() or '' end
+  return H.cached_result
+end
 
 -- Helper data ================================================================
 
@@ -149,7 +153,8 @@ H.data = {
   --- @type number|nil
   buffer_idx = nil, -- the harpoon index of the current buffer if harpooned
 }
-
+-- @type string|nil
+H.cached_result = nil
 ---@type fun():string|nil
 H.formatter = nil
 
@@ -205,7 +210,7 @@ H.create_autocommands = function()
   vim.api.nvim_create_autocmd({ 'BufEnter' }, {
     group = augroup,
     pattern = '*',
-    callback = function() H.update() end,
+    callback = H.update,
   })
 end
 
@@ -241,11 +246,16 @@ H.create_extensions = function()
   })
 end
 
--- Updates the data
--- Performs action on_update when configured
-H.update = function()
+H.update_data = function()
   H.data.list_length = H.get_list():length()
   H.data.buffer_idx = H.buffer_idx()
+end
+
+-- To be invoked on any harpoon-related event
+-- Performs action on_update if present
+H.update = function()
+  H.update_data()
+  H.cached_result = nil -- format should recompute
 
   local on_update = H.get_config().on_update
   if on_update then on_update() end
