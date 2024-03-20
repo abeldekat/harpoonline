@@ -29,15 +29,13 @@ Create up-to-date [harpoon2] information to be used in a status-line
 
 <https://github.com/abeldekat/harpoonline/assets/58370433/ec56eeb2-3cbf-46fe-bc9d-633f6aa8bb9b>
 
-<details>
-<summary>Heirline in AstroNvim v4</summary>
-![1710845846](https://github.com/abeldekat/harpoonline/assets/58370433/9a6ac3fa-2f64-40f1-a3bf-1e5702b49ccc)
-</details>
+*Demo of the features. Using lualine and mini.statusline.*
 
-<details>
-<summary>Custom statusline in NvChad v2.5</summary>
+![1710845846](https://github.com/abeldekat/harpoonline/assets/58370433/9a6ac3fa-2f64-40f1-a3bf-1e5702b49ccc)
+*Heirline in AstroNvim v4*
+
 ![1710925071](https://github.com/abeldekat/harpoonline/assets/58370433/4b911ed1-428d-4a64-ba9d-f67ba6438ce7)
-</details>
+*Custom statusline in NvChad v2.5*
 
 ## Features
 
@@ -327,7 +325,7 @@ require("heirline").setup({ statusline = { HarpoonComponent }})
 
 ```lua
 ---@type ChadrcConfig
-local M = {}
+local M = {} -- nvchad starter: lua.chadrc.lua
 
 -- Add to config.plugins:
 -- {
@@ -348,7 +346,7 @@ M.ui = {
   statusline = {
     theme = "vscode",
     separator_style = "default",
-    -- Copy local orders.vscode from nvchad.stl.utils in plugin nvchad/ui
+    -- Copy local "orders.vscode" from nvchad.stl.utils(plugin nvchad/ui)
     -- Add string "harpoon" before "file"
     order = { "mode", "harpoon", "file", "diagnostics", "git",
       "%=", "lsp_msg", "%=", "lsp", "cursor", "cwd" },
