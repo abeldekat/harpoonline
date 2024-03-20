@@ -20,18 +20,24 @@ Create up-to-date [harpoon2] information to be used in a status-line
   - [Harpoon lists](#harpoon-lists)
   - [Recipes](#recipes)
     - [Heirline](#heirline)
+    - [NvChad statusline](#nvchad-statusline)
   - [Related plugins](#related-plugins)
   - [Acknowledgements](#acknowledgements)
 <!--toc:end-->
+
 ## Demo
 
 <https://github.com/abeldekat/harpoonline/assets/58370433/ec56eeb2-3cbf-46fe-bc9d-633f6aa8bb9b>
 
+<details>
+<summary>Heirline in AstroNvim v4</summary>
 ![1710845846](https://github.com/abeldekat/harpoonline/assets/58370433/9a6ac3fa-2f64-40f1-a3bf-1e5702b49ccc)
+</details>
 
-
+<details>
+<summary>Custom statusline in NvChad v2.5</summary>
 ![1710925071](https://github.com/abeldekat/harpoonline/assets/58370433/4b911ed1-428d-4a64-ba9d-f67ba6438ce7)
-
+</details>
 
 ## Features
 
@@ -53,11 +59,7 @@ a status-line updates. Typically, this happens often:
 
 - Latest stable `Neovim` version or nightly
 - [harpoon2]
-- a statusline, for example:
-  - [mini.statusline]
-  - [lualine]
-  - [heirline]
-  - a custom implementation
+- A statusline. Examples: [mini.statusline], [lualine], [heirline] or a custom implementation
 
 ## Setup
 
@@ -74,12 +76,7 @@ an empty string.
     config = function()
       local Harpoonline = require("harpoonline").setup() -- using default config
       local lualine_c = { Harpoonline.format, "filename" }
-
-      require("lualine").setup({
-        sections = {
-          lualine_c = lualine_c,
-        },
-      })
+      require("lualine").setup({ sections = { lualine_c = lualine_c } })
     end,
 }
 ```
@@ -91,32 +88,23 @@ local function config()
   local MiniStatusline = require("mini.statusline")
   local HarpoonLine= require("harpoonline")
 
-
-  local function isnt_normal_buffer()
-    return vim.bo.buftype ~= ""
-  end
-  local function harpoon_highlight() -- example using mini.hipatterns:
+  local function isnt_normal_buffer() return vim.bo.buftype ~= "" end
+  local function harpoon_highlight() -- using mini.hipatterns
     return Harpoonline.is_buffer_harpooned() and "MiniHipatternsHack"
-      or "MiniStatuslineFilename" ----> highlight when a buffer is harpooned
+      or "MiniStatuslineFilename"
   end
   local function section_harpoon(args)
-    if MiniStatusline.is_truncated(args.trunc_width)
-      or isnt_normal_buffer() then
+    if MiniStatusline.is_truncated(args.trunc_width) or isnt_normal_buffer() then
       return ""
     end
     return Harpoonline.format() ---->  produce the info
   end
-  local function active() -- adding a harpoon section:
-    -- copy lines from mini.statusline, H.default_content_active:
-    -- ...
+  local function active() -- Hook, see mini.statusline setup
+    -- copy any lines from mini.statusline, H.default_content_active:
     local harpoon_data = section_harpoon({ trunc_width = 75 })
-    -- ...
-  
     return MiniStatusline.combine_groups({
-      -- copy lines from mini.statusline, H.default_content_active:
-      -- ...
+      -- copy any lines from mini.statusline, H.default_content_active:
       { hl = H.harpoon_highlight(), strings = { harpoon_data } },
-      -- ...
     })
   end
 
@@ -125,10 +113,7 @@ local function config()
       vim.wo.statusline = "%!v:lua.MiniStatusline.active()"
     end
   })
-  MiniStatusline.setup({
-    set_vim_settings = false,
-    content = { active = active },
-  })
+  MiniStatusline.setup({set_vim_settings = false, content = { active = active }})
 end
 
 local MiniDeps = require("mini.deps")
@@ -138,6 +123,8 @@ now(function()
   config()
 end
 ```
+
+A custom setup for mini.statusline can be found in [ak.config.ui.mini_statusline]
 
 ## Configuration
 
@@ -253,6 +240,9 @@ Output A: :arrow_right:  `-`
 
 Output B: :arrow_right:  `2`
 
+*Note*: You can also use inner highlights in the formatter function.
+See the example recipe for NvChad.
+
 ## Harpoon lists
 
 This plugin provides support for working with multiple harpoon lists.
@@ -273,8 +263,7 @@ vim.keymap.set("n", "<leader>J", function()
 end, { desc = "Switch harpoon list", silent = true })
 ```
 
-For a more complete example using two harpoon lists, see [ak.config.editor.harpoon]
-in my Neovim configuration.
+A complete setup using two harpoon lists can be found in [ak.config.editor.harpoon]
 
 ## Recipes
 
@@ -299,7 +288,7 @@ require("heirline").setup({ statusline = { HarpoonComponent }})
 ```
 
 <details>
-<summary>A proof of concept for AstroNvim version 4:</summary>
+<summary>A proof of concept for AstroNvim v4</summary>
 
 ```lua
 {
@@ -331,6 +320,52 @@ require("heirline").setup({ statusline = { HarpoonComponent }})
 
 </details>
 
+### NvChad statusline
+
+<details>
+<summary>A proof of concept for NvChad v2.5</summary>
+
+```lua
+---@type ChadrcConfig
+local M = {}
+
+-- Add to config.plugins:
+-- {
+--     "nvchad/ui",
+--     dependencies = {
+--       "abeldekat/harpoonline",
+--       config = function()
+--         require("harpoonline").setup {
+--           on_update = function() vim.cmd.redrawstatus() end,
+--         }
+--       end,
+--     },
+--   }
+
+M.ui = {
+  theme = "flexoki-light",
+
+  statusline = {
+    theme = "vscode",
+    separator_style = "default",
+    -- Copy local orders.vscode from nvchad.stl.utils in plugin nvchad/ui
+    -- Add string "harpoon" before "file"
+    order = { "mode", "harpoon", "file", "diagnostics", "git",
+      "%=", "lsp_msg", "%=", "lsp", "cursor", "cwd" },
+    modules = {
+      -- Add a custom harpoon module, using the file background.
+      harpoon = function()
+        return "%#St_file_bg# " .. require("harpoonline").format() .. " "
+      end,
+    },
+  },
+}
+
+return M
+```
+
+</details>
+
 ## Related plugins
 
 [harpoon-lualine]
@@ -358,3 +393,4 @@ require("heirline").setup({ statusline = { HarpoonComponent }})
 [harpoon-lualine]: https://github.com/letieu/harpoon-lualine
 [grapple.nvim]: https://github.com/cbochs/grapple.nvim
 [ak.config.editor.harpoon]: https://github.com/abeldekat/nvim_pde/blob/main/lua/ak/config/editor/harpoon.lua
+[ak.config.ui.mini_statusline]: https://github.com/abeldekat/nvim_pde/blob/main/lua/ak/config/ui/mini_statusline.lua
