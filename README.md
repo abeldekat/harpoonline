@@ -27,6 +27,12 @@ Create up-to-date [harpoon2] information to be used in a status-line
 
 <https://github.com/abeldekat/harpoonline/assets/58370433/ec56eeb2-3cbf-46fe-bc9d-633f6aa8bb9b>
 
+![1710845846](https://github.com/abeldekat/harpoonline/assets/58370433/9a6ac3fa-2f64-40f1-a3bf-1e5702b49ccc)
+
+
+![1710925071](https://github.com/abeldekat/harpoonline/assets/58370433/4b911ed1-428d-4a64-ba9d-f67ba6438ce7)
+
+
 ## Features
 
 - Supports multiple [harpoon2] lists.
