@@ -51,9 +51,11 @@ DEMO                                            *harpoonline-harpoonline-demo*
 
 <https://github.com/abeldekat/harpoonline/assets/58370433/ec56eeb2-3cbf-46fe-bc9d-633f6aa8bb9b>
 
-Heirline in AstroNvim v4 ~
+_Demo of the features. Using lualine and mini.statusline._
 
-Custom statusline in NvChad v2.5 ~
+_Heirline in AstroNvim v4_
+
+_Custom statusline in NvChad v2.5_
 
 
 FEATURES                                    *harpoonline-harpoonline-features*
@@ -357,7 +359,7 @@ A proof of concept for NvChad v2.5 ~
 
 >lua
     ---@type ChadrcConfig
-    local M = {}
+    local M = {} -- nvchad starter: lua.chadrc.lua
     
     -- Add to config.plugins:
     -- {
@@ -378,7 +380,7 @@ A proof of concept for NvChad v2.5 ~
       statusline = {
         theme = "vscode",
         separator_style = "default",
-        -- Copy local orders.vscode from nvchad.stl.utils in plugin nvchad/ui
+        -- Copy local "orders.vscode" from nvchad.stl.utils(plugin nvchad/ui)
         -- Add string "harpoon" before "file"
         order = { "mode", "harpoon", "file", "diagnostics", "git",
           "%=", "lsp_msg", "%=", "lsp", "cursor", "cwd" },
