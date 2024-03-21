@@ -15,7 +15,7 @@ Create up-to-date [harpoon2] information to be used in a status-line
     - [Formatters](#formatters)
       - [The "short" builtin](#the-short-builtin)
       - [The "extended" builtin](#the-extended-builtin)
-      - [Modify a builtin](#modify-a-builtin)
+      - [Customize a builtin](#customize-a-builtin)
       - [Use a custom formatter](#use-a-custom-formatter)
   - [Harpoon lists](#harpoon-lists)
   - [Recipes](#recipes)
@@ -72,7 +72,7 @@ an empty string.
     "nvim-lualine/lualine.nvim",
     dependencies =  { "abeldekat/harpoonline", version = "*" },
     config = function()
-      local Harpoonline = require("harpoonline").setup() -- using default config
+      local Harpoonline = require("harpoonline").setup() -- using defaults
       local lualine_c = { Harpoonline.format, "filename" }
       require("lualine").setup({ sections = { lualine_c = lualine_c } })
     end,
@@ -134,16 +134,16 @@ Harpoonline.config = {
   ---@type string|nil
   icon = '󰀱',
 
-  -- Harpoon:list() retrieves the default list: The name of the list is nil.
-  -- The name to display can be configured by using default_list_name
+  -- Harpoon:list() retrieves the default list: The name of that list is nil.
+  -- default_list_name: Configures the display name for the default list.
   ---@type string
   default_list_name = '',
 
   ---@type string
-  formatter = 'extended', -- use a builtin formatter
+  formatter = 'extended', -- short -- use a builtin formatter
 
   ---@type fun():string|nil
-  custom_formatter = nil, -- use this formatter when supplied
+  custom_formatter = nil, -- use this formatter when configured
   ---@type fun()|nil
   on_update = nil, -- optional action to perform after update
 }
@@ -160,9 +160,12 @@ Scenario's:
 
 #### The "short" builtin
 
+Add to the config: `{ formatter = 'short'}`
+
 ```lua
-Harpoonline.config = {
-  formatter = 'short',
+---@class HarpoonlineBuiltinOptionsShort
+H.builtin_options_short = {
+  inner_separator = '|',
 }
 ```
 
@@ -172,46 +175,53 @@ Output B: :anchor:  `[2|3]`
 
 #### The "extended" builtin
 
-The default
+This is the default formatter.
 
-Output A: :anchor:  `1 2 3 -`
+```lua
+---@class HarpoonlineBuiltinOptionsExtended
+H.builtin_options_extended = {
+  indicators = { '1', '2', '3', '4' },
+  active_indicators = { '[1]', '[2]', '[3]', '[4]' },
+  empty_slot = '·', -- interpunct, or middledot,
+  more_marks_indicator = '…', -- horizontal elipsis
+}
+```
 
-Output B: :anchor:  `1 [2] 3 -`
+Output A: :anchor:  `1 2 3 ·`
 
-#### Modify a builtin
+Output B: :anchor:  `1 [2] 3 ·`
 
-Builtin formatters: `Harpoonline.formatters`
-The corresponding formatter specific options: `Harpoonline.formatter_opts`
-
-Modify "extended":
+#### Customize a builtin
 
 ```lua
 local Harpoonline = require("harpoonline")
+---@type HarpoonlineBuiltinOptionsExtended
+local opts = {
+  indicators = { "j", "k", "l", "h" },
+  active_indicators = { "<j>", "<k>", "<l>", "<h>" },
+}
 Harpoonline.setup({
-  custom_formatter = Harpoonline.gen_override("extended", {
-    indicators = { "j", "k", "l", "h" },
-    active_indicators = { "J", "K", "L", "H" },
-  }),
+  custom_formatter = Harpoonline.gen_override("extended", opts),
 })
 ```
 
-Output A: :anchor:  `j k l -`
+Output A: :anchor:  `j k l ·`
 
-Output B: :anchor:  `j K l -`
+Output B: :anchor:  `j <k> l ·`
 
 #### Use a custom formatter
 
-The following data is kept up-to-date internally to be consumed by formatters:
+The following data is kept up-to-date internally, to be processed by formatters:
 
 ```lua
 ---@class HarpoonLineData
 H.data = {
   --- @type string|nil
-  list_name = nil, -- the name of the list in use
+  list_name = nil, -- the name of the current list
   --- @type number
-  list_length = 0, -- the length of the list
+  list_length = 0, -- the length of the current list
   --- @type number|nil
-  buffer_idx = nil, -- the harpoon index of the current buffer if harpooned
+  buffer_idx = nil, -- the mark of the current buffer if harpooned
 }
 ```
 
@@ -221,15 +231,16 @@ Example:
 local Harpoonline = require("harpoonline")
 Harpoonline.setup({
   custom_formatter = Harpoonline.gen_formatter(
-    function(data, _)
-      return string.format(
+    ---@param data HarpoonLineData
+    ---@return string
+    function(data)
+      return string.format( -- very short, without the length of the harpoon list
         "%s%s%s",
         "➡️ ",
         data.list_name and string.format("%s ", data.list_name) or "",
         data.buffer_idx and string.format("%d", data.buffer_idx) or "-"
       )
-    end,
-    {}
+    end
   ),
 })
 ```
@@ -243,8 +254,7 @@ See the example recipe for NvChad.
 
 ## Harpoon lists
 
-This plugin provides support for working with multiple harpoon lists.
-
+This plugin supports working with multiple harpoon lists.
 The list in use when Neovim is started is assumed to be the default list
 
 The plugin needs to be notified when switching to another list
