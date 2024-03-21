@@ -24,8 +24,8 @@ end
 ---@class HarpoonLineConfig
 Harpoonline.config = {
   -- suitable icons: "󰀱", "", "󱡅"
-  ---@type string|nil
-  icon = '󰀱',
+  ---@type string
+  icon = '󰀱', -- An empty string disables showing the icon
 
   -- Harpoon:list() retrieves the default list: The name of that list is nil.
   -- default_list_name: Configures the display name for the default list.
@@ -109,10 +109,17 @@ H.builtin_options_short = {
 
 ---@class HarpoonlineBuiltinOptionsExtended
 H.builtin_options_extended = {
+  -- An indicator corresponds to a position in the harpoon list
   indicators = { '1', '2', '3', '4' },
   active_indicators = { '[1]', '[2]', '[3]', '[4]' },
-  empty_slot = '·', -- interpunct, or middledot,
-  more_marks_indicator = '…', -- horizontal elipsis
+  separator = ' ', -- how to separate the indicators
+
+  -- 1 More indicators than items in the harpoon list:
+  empty_slot = '·', -- middledot. Disable with empty string
+
+  -- 2 Less indicators than items in the harpoon list
+  more_marks_indicator = '…', -- horizontal elipsis. Disable with empty string
+  more_marks_active_indicator = '[…]', -- Disable with empty string
 }
 
 -- Helper functionality =======================================================
@@ -123,7 +130,7 @@ H.setup_config = function(config)
   vim.validate({ config = { config, 'table', true } })
   config = vim.tbl_deep_extend('force', vim.deepcopy(H.default_config), config or {})
 
-  vim.validate({ icon = { config.icon, 'string', true } })
+  vim.validate({ icon = { config.icon, 'string' } })
   vim.validate({ default_list_name = { config.default_list_name, 'string' } })
   vim.validate({ formatter = { config.formatter, 'string' } })
   vim.validate({ custom_formatter = { config.custom_formatter, 'function', true } })
@@ -233,14 +240,26 @@ H.update = function()
 end
 
 ---@param data HarpoonLineData
+---@return string
+H.make_icon_and_name = function(data)
+  local icon = H.get_config().icon
+  local has_icon = icon ~= ''
+  return string.format(
+    '%s%s%s',
+    has_icon and icon or '',
+    has_icon and ' ' or '',
+    data.list_name and data.list_name or H.get_config().default_list_name
+  )
+end
+
+---@param data HarpoonLineData
 ---@param opts HarpoonlineBuiltinOptionsShort
 ---@return string
 H.builtin_short = function(data, opts)
-  local icon = H.get_config().icon
+  local icon_and_name = H.make_icon_and_name(data)
   return string.format(
-    '%s%s[%s%d]',
-    icon and string.format('%s ', icon) or '',
-    data.list_name and data.list_name or H.get_config().default_list_name,
+    '%s[%s%d]',
+    icon_and_name,
     data.buffer_idx and string.format('%s%s', data.buffer_idx, opts.inner_separator) or '',
     data.list_length
   )
@@ -250,33 +269,36 @@ end
 ---@param opts HarpoonlineBuiltinOptionsExtended
 ---@return string
 H.builtin_extended = function(data, opts)
-  --          ╭─────────────────────────────────────────────────────────╮
-  --          │             credits letieu/harpoon-lualine              │
-  --          ╰─────────────────────────────────────────────────────────╯
-  local icon = H.get_config().icon
-  local prefix = string.format(
-    '%s%s',
-    icon and string.format('%s ', icon) or '',
-    data.list_name and data.list_name or H.get_config().default_list_name
-  )
+  -- build prefix
+  local show_empty_slots = opts.empty_slot and opts.empty_slot ~= ''
+  local show_prefix = show_empty_slots or data.list_length > 0
+  local prefix = ''
+  if show_prefix then
+    prefix = H.make_icon_and_name(data)
+    prefix = prefix ~= '' and prefix .. ' ' or prefix
+  end
 
-  local nr_of_indicators = #opts.indicators
-  local indicator
+  -- build slots
+  local nr_of_slots = #opts.indicators
   local status = {}
-  for i = 1, nr_of_indicators do
-    if i > data.list_length then
-      indicator = opts.empty_slot
-    elseif data.buffer_idx and data.buffer_idx == i then
-      indicator = opts.active_indicators[i]
+  for i = 1, nr_of_slots do
+    if i > data.list_length then -- more slots then ...
+      if show_empty_slots then table.insert(status, opts.empty_slot) end
+    elseif i == data.buffer_idx then
+      table.insert(status, opts.active_indicators[i])
     else
-      indicator = opts.indicators[i]
+      table.insert(status, opts.indicators[i])
     end
-    table.insert(status, indicator)
   end
-  if (data.list_length > nr_of_indicators) and opts.more_marks_indicator then
-    table.insert(status, opts.more_marks_indicator)
+
+  -- add more marks indicator
+  if data.list_length > nr_of_slots then -- more marks then...
+    local ind = opts.more_marks_indicator
+    if nr_of_slots < data.buffer_idx then ind = opts.more_marks_active_indicator end
+    if ind and ind ~= '' then table.insert(status, ind) end
   end
-  return prefix .. ' ' .. table.concat(status, ' ')
+
+  return prefix .. table.concat(status, opts.separator)
 end
 
 return Harpoonline

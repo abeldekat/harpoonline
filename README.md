@@ -3,6 +3,7 @@
 Create up-to-date [harpoon2] information to be used in a status-line
 
 ## TOC
+
 <!--toc:start-->
 - [Harpoonline](#harpoonline)
   - [Demo](#demo)
@@ -13,8 +14,8 @@ Create up-to-date [harpoon2] information to be used in a status-line
     - [Using mini.deps and mini.statusline](#using-minideps-and-ministatusline)
   - [Configuration](#configuration)
     - [Formatters](#formatters)
-      - [The "short" builtin](#the-short-builtin)
       - [The "extended" builtin](#the-extended-builtin)
+      - [The "short" builtin](#the-short-builtin)
       - [Customize a builtin](#customize-a-builtin)
       - [Use a custom formatter](#use-a-custom-formatter)
   - [Harpoon lists](#harpoon-lists)
@@ -132,7 +133,7 @@ The following configuration is implied when calling `setup` without arguments:
 ---@class HarpoonLineConfig
 Harpoonline.config = {
   ---@type string|nil
-  icon = '󰀱',
+  icon = '󰀱', -- Disable with empty string
 
   -- Harpoon:list() retrieves the default list: The name of that list is nil.
   -- default_list_name: Configures the display name for the default list.
@@ -158,6 +159,32 @@ Scenario's:
 - A: 3 marks, the current buffer is not harpooned
 - B: 3 marks, the current buffer is harpooned on mark 2
 
+#### The "extended" builtin
+
+This is the default formatter.
+
+```lua
+---@class HarpoonlineBuiltinOptionsExtended
+H.builtin_options_extended = {
+
+  -- An indicator corresponds to a position in the harpoon list
+  indicators = { '1', '2', '3', '4' },
+  active_indicators = { '[1]', '[2]', '[3]', '[4]' },
+  separator = ' ', -- how to separate the indicators
+
+  -- 1 More indicators than items in the harpoon list:
+  empty_slot = '·', -- a middledot. Disable with empty string
+
+  -- 2 Less indicators than items in the harpoon list
+  more_marks_indicator = '…', -- a horizontal elipsis. Disable with empty string
+  more_marks_active_indicator = '[…]', -- Disable with empty string
+}
+```
+
+Output A: :anchor:  `1 2 3 ·`
+
+Output B: :anchor:  `1 [2] 3 ·`
+
 #### The "short" builtin
 
 Add to the config: `{ formatter = 'short'}`
@@ -173,24 +200,6 @@ Output A: :anchor:  `[3]`
 
 Output B: :anchor:  `[2|3]`
 
-#### The "extended" builtin
-
-This is the default formatter.
-
-```lua
----@class HarpoonlineBuiltinOptionsExtended
-H.builtin_options_extended = {
-  indicators = { '1', '2', '3', '4' },
-  active_indicators = { '[1]', '[2]', '[3]', '[4]' },
-  empty_slot = '·', -- interpunct, or middledot,
-  more_marks_indicator = '…', -- horizontal elipsis
-}
-```
-
-Output A: :anchor:  `1 2 3 ·`
-
-Output B: :anchor:  `1 [2] 3 ·`
-
 #### Customize a builtin
 
 ```lua
@@ -199,15 +208,16 @@ local Harpoonline = require("harpoonline")
 local opts = {
   indicators = { "j", "k", "l", "h" },
   active_indicators = { "<j>", "<k>", "<l>", "<h>" },
+  empty_slot = "", -- disabled
 }
 Harpoonline.setup({
   custom_formatter = Harpoonline.gen_override("extended", opts),
 })
 ```
 
-Output A: :anchor:  `j k l ·`
+Output A: :anchor:  `j k l`
 
-Output B: :anchor:  `j <k> l ·`
+Output B: :anchor:  `j <k> l`
 
 #### Use a custom formatter
 
@@ -257,14 +267,17 @@ See the example recipe for NvChad.
 This plugin supports working with multiple harpoon lists.
 The list in use when Neovim is started is assumed to be the default list
 
+**Important**:
+
 The plugin needs to be notified when switching to another list
 using its custom `HarpoonSwitchedList` event:
 
 ```lua
-local list_name = nil -- starts with the default
+ -- Starts with the default. Use this variable in harpoon:list(list_name)
+local list_name = nil
 
 vim.keymap.set("n", "<leader>J", function()
-  -- toggle between the current list and list "custom"
+  -- toggle between the default list and list "custom"
   list_name = list_name ~= "custom" and "custom" or nil
   vim.api.nvim_exec_autocmds("User",
     { pattern = "HarpoonSwitchedList", modeline = false, data = list_name })
