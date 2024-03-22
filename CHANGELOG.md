@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/abeldekat/harpoonline/compare/v1.2.0...v1.2.1) (2024-03-22)
+
+
+### Bug Fixes
+
+* compare number with nil error, when buffer is harpooned on a mark greater then the number of indicators ([#11](https://github.com/abeldekat/harpoonline/issues/11)) ([89462e4](https://github.com/abeldekat/harpoonline/commit/89462e497ad2573f2e280d102ce01ac863c2ae8d))
+
 ## [1.2.0](https://github.com/abeldekat/harpoonline/compare/v1.1.0...v1.2.0) (2024-03-21)
 
 
