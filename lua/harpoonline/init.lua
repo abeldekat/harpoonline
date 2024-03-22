@@ -73,7 +73,7 @@ end
 -- Return true is the current buffer is harpooned, false otherwise
 -- Useful for extra highlighting
 ---@return boolean
-Harpoonline.is_buffer_harpooned = function() return H.data.buffer_idx and true or false end
+Harpoonline.is_buffer_harpooned = function() return H.data.buffer_idx ~= nil end
 
 -- The function to be used by consumers
 ---@return string
@@ -294,7 +294,7 @@ H.builtin_extended = function(data, opts)
   -- add more marks indicator
   if data.list_length > nr_of_slots then -- more marks then...
     local ind = opts.more_marks_indicator
-    if nr_of_slots < data.buffer_idx then ind = opts.more_marks_active_indicator end
+    if data.buffer_idx and data.buffer_idx > nr_of_slots then ind = opts.more_marks_active_indicator end
     if ind and ind ~= '' then table.insert(status, ind) end
   end
 
