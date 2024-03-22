@@ -118,7 +118,10 @@ end
 local MiniDeps = require("mini.deps")
 local add, now = MiniDeps.add, MiniDeps.now
 now(function()
-  add({ source = "echasnovski/mini.statusline", depends = {"abeldekat/harpoonline"}})
+  add({
+    source = "echasnovski/mini.statusline",
+    depends = {{ source = "abeldekat/harpoonline", checkout = "stable" }}
+  })
   config()
 end
 ```
