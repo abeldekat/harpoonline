@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/abeldekat/harpoonline/compare/v1.2.1...v1.3.0) (2024-03-22)
+
+
+### Features
+
+* Readme. Recommend lualine.refresh() in the on_update function ([#14](https://github.com/abeldekat/harpoonline/issues/14)) ([0a882ac](https://github.com/abeldekat/harpoonline/commit/0a882ac7ca08d06bc0f1cb08e9692b21ac9d0863))
+
 ## [1.2.1](https://github.com/abeldekat/harpoonline/compare/v1.2.0...v1.2.1) (2024-03-22)
 
 
