@@ -1,24 +1,21 @@
 -- Module definition ==========================================================
 
-local has_harpoon, Harpoon = pcall(require, 'harpoon')
-local _, Extensions = pcall(require, 'harpoon.extensions')
-
 ---@class HarpoonLine
 local Harpoonline = {}
 local H = {} -- helpers
 
 ---@param config? HarpoonLineConfig
----@return HarpoonLine
 Harpoonline.setup = function(config)
-  if has_harpoon then
-    config = H.setup_config(config)
-    H.apply_config(config)
+  local has_harpoon, Harpoon = pcall(require, 'harpoon')
+  if not has_harpoon then return end
 
-    H.create_autocommands()
-    H.create_extensions()
-    H.update_data()
-  end
-  return Harpoonline
+  H.harpoon_plugin = Harpoon
+  config = H.setup_config(config)
+  H.apply_config(config)
+
+  H.create_autocommands()
+  H.create_extensions(require('harpoon.extensions'))
+  H.update_data()
 end
 
 ---@class HarpoonLineConfig
@@ -84,6 +81,8 @@ end
 
 -- Helper data ================================================================
 
+H.harpoon_plugin = nil
+
 ---@type HarpoonLineConfig
 H.default_config = vim.deepcopy(Harpoonline.config)
 
@@ -96,6 +95,7 @@ H.data = {
   --- @type number|nil
   buffer_idx = nil, -- the mark of the current buffer if harpooned
 }
+
 -- @type string|nil
 H.cached_result = nil
 
@@ -193,7 +193,7 @@ H.create_autocommands = function()
 end
 
 ---@return HarpoonList
-H.get_list = function() return Harpoon:list(H.data.list_name) end
+H.get_list = function() return H.harpoon_plugin:list(H.data.list_name) end
 
 -- If the current buffer is harpooned, return the index of the harpoon mark
 -- Otherwise, return nil
@@ -211,13 +211,13 @@ end
 -- Update the data when the user adds to or removes from a list.
 -- Needed because those actions can be done without leaving the buffer.
 -- All other update scenarios are covered by listening to the BufEnter event.
-H.create_extensions = function()
-  Harpoon:extend({
+H.create_extensions = function(Extensions)
+  H.harpoon_plugin:extend({
     [Extensions.event_names.ADD] = function()
       vim.schedule(H.update) -- actual add occurs after
     end,
   })
-  Harpoon:extend({
+  H.harpoon_plugin:extend({
     [Extensions.event_names.REMOVE] = function()
       vim.schedule(H.update) -- actual remove occurs after
     end,

@@ -368,7 +368,7 @@ local M = {} -- nvchad starter: lua.chadrc.lua
 --         }
 --       end,
 --     },
---   }
+-- }
 
 M.ui = {
   theme = "flexoki-light",
