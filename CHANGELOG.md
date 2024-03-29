@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/abeldekat/harpoonline/compare/v1.3.0...v2.0.0) (2024-03-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* See pinned issue #16
+
+### Code Refactoring
+
+* See pinned issue [#16](https://github.com/abeldekat/harpoonline/issues/16) ([ef94e1c](https://github.com/abeldekat/harpoonline/commit/ef94e1c8b5377a897ceca48e9b7158bafa2b833f))
+
 ## [1.3.0](https://github.com/abeldekat/harpoonline/compare/v1.2.1...v1.3.0) (2024-03-22)
 
 
