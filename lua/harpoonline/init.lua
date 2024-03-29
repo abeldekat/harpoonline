@@ -10,17 +10,18 @@ Harpoonline.setup = function(config)
   if not has_harpoon then return end
 
   H.harpoon_plugin = Harpoon
+
   config = H.setup_config(config)
   H.apply_config(config)
-
   H.create_autocommands()
+
   H.create_extensions(require('harpoon.extensions'))
-  H.update_data()
+  H.initialize()
 end
 
 ---@class HarpoonLineConfig
 Harpoonline.config = {
-  -- suitable icons: "󰀱", "", "󱡅"
+  -- other nice icons: "󰀱", "", "󱡅"
   ---@type string
   icon = '󰀱', -- An empty string disables showing the icon
 
@@ -29,42 +30,49 @@ Harpoonline.config = {
   ---@type string
   default_list_name = '',
 
-  ---@type string
-  formatter = 'extended', -- short -- use a builtin formatter
+  ---@type "extended" | "short"
+  formatter = 'extended', -- use a builtin formatter
+
+  formatter_opts = {
+    extended = {
+      -- An indicator corresponds to a position in the harpoon list
+      -- Suggestion: Add an indicator for each configured "select" keybinding
+      indicators = { ' 1 ', ' 2 ', ' 3 ', ' 4 ' },
+      active_indicators = { '[1]', '[2]', '[3]', '[4]' },
+
+      -- 1 More indicators than items in the harpoon list:
+      empty_slot = '', -- ' · ', -- middledot. Disable using empty string
+
+      -- 2 Less indicators than items in the harpoon list
+      more_marks_indicator = ' … ', -- horizontal elipsis. Disable using empty string
+      more_marks_active_indicator = '[…]', -- Disable using empty string
+    },
+    short = {
+      inner_separator = '|',
+    },
+  },
 
   ---@type fun():string|nil
   custom_formatter = nil, -- use this formatter when configured
+
   ---@type fun()|nil
   on_update = nil, -- optional action to perform after update
 }
 
 ---@class HarpoonlineFormatterConfig
 Harpoonline.formatters = {
-  extended = function() return { formatter = H.builtin_extended, opts = H.builtin_options_extended } end,
-  short = function() return { formatter = H.builtin_short, opts = H.builtin_options_short } end,
+  extended = function() return H.builtin_extended end,
+  short = function() return H.builtin_short end,
 }
 
 -- Module functionality =======================================================
 
 -- Given a formatter function, return a wrapper function that can be invoked
 -- by consumers.
----@param formatter fun(data: HarpoonLineData, opts?: table):string
----@param opts? table
+---@param formatter fun(data: HarpoonLineData):string
 ---@return function
-Harpoonline.gen_formatter = function(formatter, opts)
-  return opts and function() return formatter(H.data, opts) end or function() return formatter(H.data) end
-end
-
--- Calls gen_formatter using a builtin formatter identified by name
--- Merges the options with the default options of that formatter
---
--- If name is not valied, "extended" will be used
----@param name string
----@param opts table
----@return function
-Harpoonline.gen_override = function(name, opts)
-  local config = H.get_builtin_config(name, opts)
-  return Harpoonline.gen_formatter(config.formatter, config.opts)
+Harpoonline.gen_formatter = function(formatter)
+  return function() return formatter(H.data) end
 end
 
 -- Return true is the current buffer is harpooned, false otherwise
@@ -102,26 +110,6 @@ H.cached_result = nil
 ---@type fun():string|nil
 H.formatter = nil
 
----@class HarpoonlineBuiltinOptionsShort
-H.builtin_options_short = {
-  inner_separator = '|',
-}
-
----@class HarpoonlineBuiltinOptionsExtended
-H.builtin_options_extended = {
-  -- An indicator corresponds to a position in the harpoon list
-  indicators = { '1', '2', '3', '4' },
-  active_indicators = { '[1]', '[2]', '[3]', '[4]' },
-  separator = ' ', -- how to separate the indicators
-
-  -- 1 More indicators than items in the harpoon list:
-  empty_slot = '·', -- middledot. Disable with empty string
-
-  -- 2 Less indicators than items in the harpoon list
-  more_marks_indicator = '…', -- horizontal elipsis. Disable with empty string
-  more_marks_active_indicator = '[…]', -- Disable with empty string
-}
-
 -- Helper functionality =======================================================
 
 ---@param config? HarpoonLineConfig
@@ -133,6 +121,7 @@ H.setup_config = function(config)
   vim.validate({ icon = { config.icon, 'string' } })
   vim.validate({ default_list_name = { config.default_list_name, 'string' } })
   vim.validate({ formatter = { config.formatter, 'string' } })
+  vim.validate({ formatter_opts = { config.formatter_opts, 'table' } })
   vim.validate({ custom_formatter = { config.custom_formatter, 'function', true } })
   vim.validate({ on_update = { config.on_update, 'function', true } })
   return config
@@ -147,29 +136,15 @@ H.apply_config = function(config)
   if config.custom_formatter then
     H.formatter = config.custom_formatter
   else
-    local formatter_config = H.get_builtin_config(config.formatter)
-    H.formatter = Harpoonline.gen_formatter(formatter_config.formatter, formatter_config.opts)
+    local is_valid = vim.tbl_contains(vim.tbl_keys(Harpoonline.formatters), config.formatter)
+    local key = is_valid and config.formatter or 'extended'
+    H.formatter = Harpoonline.gen_formatter(Harpoonline.formatters[key]())
   end
   Harpoonline.config = config
 end
 
 ---@return HarpoonLineConfig
 H.get_config = function() return Harpoonline.config end
-
--- Retuns the function and the options of the builtin config
--- identified by name.
--- The options are merged with the default options of the formatter.
----@param name string
----@param opts? table
----@return table
-H.get_builtin_config = function(name, opts)
-  local is_valid = vim.tbl_contains(vim.tbl_keys(Harpoonline.formatters), name)
-  local key = is_valid and name or 'extended'
-  local result = Harpoonline.formatters[key]()
-
-  if opts then result.opts = vim.tbl_deep_extend('force', result.opts, opts) end
-  return result
-end
 
 -- Update the data on each BufEnter event
 -- Update the name of the list on custom event HarpoonSwitchedList
@@ -239,44 +214,46 @@ H.update = function()
   if on_update then on_update() end
 end
 
----@param data HarpoonLineData
+H.initialize = function() H.update_data() end
+
+-- Return either the icon or an empty string
 ---@return string
-H.make_icon_and_name = function(data)
+H.make_icon = function()
   local icon = H.get_config().icon
-  local has_icon = icon ~= ''
-  return string.format(
-    '%s%s%s',
-    has_icon and icon or '',
-    has_icon and ' ' or '',
-    data.list_name and data.list_name or H.get_config().default_list_name
-  )
+  return icon ~= '' and icon or ''
 end
 
 ---@param data HarpoonLineData
----@param opts HarpoonlineBuiltinOptionsShort
 ---@return string
-H.builtin_short = function(data, opts)
-  local icon_and_name = H.make_icon_and_name(data)
+H.builtin_short = function(data)
+  local opts = H.get_config().formatter_opts.short
+  local icon = H.make_icon()
   return string.format(
-    '%s[%s%d]',
-    icon_and_name,
+    '%s%s%s[%s%d]',
+    icon,
+    icon == '' and '' or ' ',
+    data.list_name and data.list_name or '', -- no space after list name...
     data.buffer_idx and string.format('%s%s', data.buffer_idx, opts.inner_separator) or '',
     data.list_length
   )
 end
 
 ---@param data HarpoonLineData
----@param opts HarpoonlineBuiltinOptionsExtended
 ---@return string
-H.builtin_extended = function(data, opts)
-  -- build prefix
+H.builtin_extended = function(data)
+  local opts = H.get_config().formatter_opts.extended
   local show_empty_slots = opts.empty_slot and opts.empty_slot ~= ''
-  local show_prefix = show_empty_slots or data.list_length > 0
-  local prefix = ''
-  if show_prefix then
-    prefix = H.make_icon_and_name(data)
-    prefix = prefix ~= '' and prefix .. ' ' or prefix
-  end
+
+  -- build prefix
+  local show_prefix = true -- show_empty_slots or data.number_of_tags > 0
+  local icon = H.make_icon()
+  local prefix = not show_prefix and ''
+    or string.format(
+      '%s%s%s', --
+      icon,
+      data.list_name and ' ' or '',
+      data.list_name and data.list_name or ''
+    )
 
   -- build slots
   local nr_of_slots = #opts.indicators
@@ -290,7 +267,6 @@ H.builtin_extended = function(data, opts)
       table.insert(status, opts.indicators[i])
     end
   end
-
   -- add more marks indicator
   if data.list_length > nr_of_slots then -- more marks then...
     local ind = opts.more_marks_indicator
@@ -298,7 +274,8 @@ H.builtin_extended = function(data, opts)
     if ind and ind ~= '' then table.insert(status, ind) end
   end
 
-  return prefix .. table.concat(status, opts.separator)
+  prefix = prefix == '' and prefix or prefix .. ' '
+  return prefix .. table.concat(status)
 end
 
 return Harpoonline
