@@ -114,7 +114,7 @@ local function config()
 
   HarpoonLine.setup({
     on_update = function()
-      vim.wo.statusline = "%!v:lua.MiniStatusline.active()"
+      vim.wo.statusline = "%{%v:lua.MiniStatusline.active()%}"
     end
   })
   MiniStatusline.setup({set_vim_settings = false, content = { active = active }})
