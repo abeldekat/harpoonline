@@ -3,6 +3,11 @@ deps/mini.nvim:
 	@mkdir -p deps
 	git clone --filter=blob:none https://github.com/echasnovski/mini.nvim $@
 
+# Download plenary for harpoon
+deps/plenary.nvim:
+	@mkdir -p deps
+	git clone --filter=blob:none https://github.com/nvim-lua/plenary.nvim $@
+
 # Download harpoon2
 deps/harpoon:
 	@mkdir -p deps
@@ -10,9 +15,9 @@ deps/harpoon:
 	cd deps/harpoon; git checkout harpoon2
 
 # Run all test files
-test: deps/mini.nvim deps/harpoon
+test: deps/mini.nvim deps/harpoon deps/plenary.nvim
 	nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run()"
 
 # Run test from file at `$FILE` environment variable
-test_file: deps/mini.nvim deps/harpoon
+test_file: deps/mini.nvim deps/harpoon deps/plenary.nvim
 	nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run_file('$(FILE)')"
