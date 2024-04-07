@@ -1,23 +1,29 @@
+clean:
+	@rm -rf .tests/*
+
+.tests/data/nvim:
+	@mkdir -p $@
+
 # Download 'mini.nvim' to use its 'mini.test' testing module
-deps/mini.nvim:
-	@mkdir -p deps
+.tests/mini.nvim:
+	@mkdir -p .tests
 	git clone --filter=blob:none https://github.com/echasnovski/mini.nvim $@
 
 # Download plenary for harpoon
-deps/plenary.nvim:
-	@mkdir -p deps
+.tests/plenary.nvim:
+	@mkdir -p .tests
 	git clone --filter=blob:none https://github.com/nvim-lua/plenary.nvim $@
 
 # Download harpoon2
-deps/harpoon:
-	@mkdir -p deps
+.tests/harpoon:
+	@mkdir -p .tests
 	git clone --filter=blob:none https://github.com/ThePrimeagen/harpoon.git $@
-	cd deps/harpoon; git checkout harpoon2
+	cd .tests/harpoon; git checkout harpoon2
 
 # Run all test files
-test: deps/mini.nvim deps/harpoon deps/plenary.nvim
+test: .tests/mini.nvim .tests/harpoon .tests/plenary.nvim .tests/data/nvim
 	nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run()"
 
 # Run test from file at `$FILE` environment variable
-test_file: deps/mini.nvim deps/harpoon deps/plenary.nvim
+test_file: .tests/mini.nvim .tests/harpoon .tests/plenary.nvim .tests/data/nvim
 	nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run_file('$(FILE)')"
