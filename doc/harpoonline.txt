@@ -68,9 +68,9 @@ FEATURES                                    *harpoonline-harpoonline-features*
 - Resilience: The formatter will return an empty string when harpoon is not present.
 - Performance/efficiency: The data is cached and _only_ updated when needed.
 
-_Note_:
+_Note_
 
-Without caching the info needed from harpoon must be retrieved whenever a
+Withoutcaching the info needed from harpoon must be retrieved whenever a
 status-line updates. Typically, this happens often:
 
 - When navigating inside a buffer
@@ -86,9 +86,8 @@ REQUIREMENTS                            *harpoonline-harpoonline-requirements*
 
 SETUP                                          *harpoonline-harpoonline-setup*
 
-**Important**: don’t forget to call `require('harpoonline').setup()` to
-enable the plugin. Without that call, the formatter will return an empty
-string.
+**Important**don’t forget to call `require('harpoonline').setup()` to enable
+the plugin. Without that call, the formatter will return an empty string.
 
 
 USING LAZY.NVIM AND LUALINE ~
@@ -171,7 +170,7 @@ The following configuration is implied when calling `setup` without arguments:
       ---@type string
       icon = '󰀱', -- An empty string disables showing the icon
     
-      -- Harpoon:list() retrieves the default list: The name of that list is nil.
+      -- Harpoon:list(), without a name, retrieves the default list:
       -- default_list_name: Configures the display name for the default list.
       ---@type string
       default_list_name = '',
@@ -206,7 +205,7 @@ The following configuration is implied when calling `setup` without arguments:
     }
 <
 
-_Note_: The icon does not display properly in the browser…
+_Note_The icon does not display properly in the browser…
 
 
 FORMATTERS ~
@@ -222,11 +221,11 @@ THE “EXTENDED” BUILT-IN
 This is the default formatter. Default options:
 `config.formatter_opts.extended`
 
-Output A: :anchor: `1 2 3`
+Output A: `1 2 3`
 
-Output B: :anchor: `1 [2] 3`
+Output B: `1 [2] 3`
 
-**Note**: Five marks, the fifth mark is the active buffer:
+**Note**Five marks, the fifth mark is the active buffer:
 
 Output B: 󰛢 `1 2 3 4 […]`
 
@@ -236,9 +235,9 @@ THE “SHORT” BUILT-IN
 Add to the config: `formatter = 'short'`. Default options:
 `config.formatter_opts.short`
 
-Output A: :anchor: `[3]`
+Output A: `[3]`
 
-Output B: :anchor: `[2|3]`
+Output B: `[2|3]`
 
 
 CUSTOMIZE A BUILT-IN
@@ -258,9 +257,9 @@ CUSTOMIZE A BUILT-IN
     })
 <
 
-Output A: :anchor: `123·`
+Output A: `123·`
 
-Output B: :anchor: `1[2]3·`
+Output B: `1[2]3·`
 
 
 USE A CUSTOM FORMATTER
@@ -271,6 +270,7 @@ formatters:
 >lua
     ---@class HarpoonLineData
     H.data = {
+      -- Harpoon's default list is in use when list_name = nil
       --- @type string|nil
       list_name = nil, -- the name of the current list
       --- @type number
@@ -300,11 +300,11 @@ Example:
     })
 <
 
-Output A: :arrow_right: `-`
+Output A: `-`
 
-Output B: :arrow_right: `2`
+Output B: `2`
 
-_Note_: You can also use inner highlights in the formatter function. See the
+_Note_You can also use inner highlights in the formatter function. See the
 example recipe for NvChad.
 
 
@@ -313,9 +313,9 @@ HARPOON LISTS                          *harpoonline-harpoonline-harpoon-lists*
 This plugin supports working with multiple harpoon lists. The list in use when
 Neovim is started is assumed to be the default list
 
-**Important**:
+**Important**
 
-The plugin needs to be notified when switching to another list using its custom
+Theplugin needs to be notified when switching to another list using its custom
 `HarpoonSwitchedList` event:
 
 >lua
@@ -447,9 +447,9 @@ harpoon-lualine <https://github.com/letieu/harpoon-lualine>
 
 ACKNOWLEDGEMENTS                    *harpoonline-harpoonline-acknowledgements*
 
-- @theprimeagen: Harpoon is the most important part of my workflow.
-- @echasnovski: The structure of this plugin is heavily based on mini.nvim <https://github.com/echasnovski/mini.nvim>
-- @letieu: The `extended` formatter is inspired by plugin harpoon-lualine <https://github.com/letieu/harpoon-lualine>
+- @theprimeagenHarpoon is the most important part of my workflow.
+- @echasnovskiThe structure of this plugin is heavily based on mini.nvim <https://github.com/echasnovski/mini.nvim>
+- @letieuThe `extended` formatter is inspired by plugin harpoon-lualine <https://github.com/letieu/harpoon-lualine>
 
 ==============================================================================
 2. Links                                                   *harpoonline-links*
