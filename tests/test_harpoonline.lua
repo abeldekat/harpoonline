@@ -19,13 +19,13 @@ local child = MiniTest.new_child_neovim() -- Create (but not start) child Neovim
 --          ╰─────────────────────────────────────────────────────────╯
 local edit = function(name) child.cmd('edit tests/dir-harpoonline/real-files/' .. name) end
 local add_current_buffer = function(list_name)
-  local instruction = string.format(
+  local add = string.format(
     '%s%s%s', -- compose the require statement
-    "require('harpoon'):list(",
-    list_name and list_name or '',
+    'require("harpoon"):list(',
+    list_name and '"' .. list_name .. '"' or '',
     '):add()'
   )
-  child.lua(instruction)
+  child.lua(add)
 end
 local add_files_to_list = function(names, list_name)
   for _, name in ipairs(names) do
@@ -141,12 +141,12 @@ T['format()']['extended']['remove item'] = function()
 end
 T['format()']['extended']['switch list'] = function()
   child.lua([[M.setup()]])
+  add_files_to_list({ '1', '2' }, 'dev')
   child.lua([[
     vim.api.nvim_exec_autocmds("User", {
       pattern = "HarpoonSwitchedList", modeline = false, data = "dev"
     })
   ]])
-  add_files_to_list({ '1', '2' }, 'dev')
   eq(child.lua_get([[ M.format() ]]), icon .. ' dev  1 [2]')
 end
 
