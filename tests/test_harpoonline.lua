@@ -156,6 +156,11 @@ T['format()']['extended']['switch list'] = function()
   ]])
   eq(child.lua_get([[ M.format() ]]), icon .. ' dev  1 [2]')
 end
+T['format()']['extended']['default_list_name'] = function()
+  child.lua([[M.setup({default_list_name="mainlist"})]])
+  add_files_to_list({ '1', '2' })
+  eq(child.lua_get([[ M.format() ]]), icon .. ' mainlist  1 [2]')
+end
 
 --          ╭─────────────────────────────────────────────────────────╮
 --          │                     Short formatter                     │
@@ -187,6 +192,21 @@ T['format()']['short']['inner_separator'] = function()
   ]])
   add_files_to_list({ '1', '2' })
   eq(child.lua_get([[M.format()]]), icon .. ' [2-2]')
+end
+T['format()']['short']['switch list'] = function()
+  child.lua([[M.setup({ formatter = "short" })]])
+  add_files_to_list({ '1', '2' }, 'dev')
+  child.lua([[
+    vim.api.nvim_exec_autocmds("User", {
+      pattern = "HarpoonSwitchedList", modeline = false, data = "dev"
+    })
+  ]])
+  eq(child.lua_get([[ M.format() ]]), icon .. ' dev[2|2]')
+end
+T['format()']['short']['default_list_name'] = function()
+  child.lua([[M.setup({ formatter = "short", default_list_name = "mainlist" })]])
+  add_files_to_list({ '1', '2' })
+  eq(child.lua_get([[ M.format() ]]), icon .. ' mainlist[2|2]')
 end
 
 --          ╭─────────────────────────────────────────────────────────╮

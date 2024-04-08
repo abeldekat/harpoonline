@@ -144,7 +144,7 @@ Harpoonline.config = {
   ---@type string
   icon = '󰀱', -- An empty string disables showing the icon
 
-  -- Harpoon:list() retrieves the default list: The name of that list is nil.
+  -- Harpoon:list(), without a name, retrieves the default list:
   -- default_list_name: Configures the display name for the default list.
   ---@type string
   default_list_name = '',
@@ -236,6 +236,7 @@ The following data is kept up-to-date internally, to be processed by formatters:
 ```lua
 ---@class HarpoonLineData
 H.data = {
+  -- Harpoon's default list is in use when list_name = nil
   --- @type string|nil
   list_name = nil, -- the name of the current list
   --- @type number
