@@ -167,50 +167,48 @@ H.create_autocommands = function()
   })
 end
 
+-- Update the data when the user adds to or removes from a list.
+-- Needed because those actions can be done without leaving the buffer.
+-- All other update scenarios are covered by listening to the BufEnter event.
+H.create_extensions = function(Extensions)
+  H.harpoon_plugin:extend({ [Extensions.event_names.ADD] = H.update })
+  H.harpoon_plugin:extend({ [Extensions.event_names.REMOVE] = H.update })
+end
+
 ---@return HarpoonList
 H.get_list = function() return H.harpoon_plugin:list(H.data.list_name) end
 
 -- If the current buffer is harpooned, return the index of the harpoon mark
 -- Otherwise, return nil
+---@param list HarpoonList
 ---@return number|nil
-H.buffer_idx = function()
+H.buffer_idx = function(list)
   if vim.bo.buftype ~= '' then return end -- not a normal buffer
+  if list:length() == 0 then return end -- no items in the list
 
   local current_file = vim.fn.expand('%:p:.')
-  local marks = H.get_list().items
-  for idx, item in ipairs(marks) do
+  for idx, item in ipairs(list.items) do
     if item.value == current_file then return idx end
   end
 end
 
--- Update the data when the user adds to or removes from a list.
--- Needed because those actions can be done without leaving the buffer.
--- All other update scenarios are covered by listening to the BufEnter event.
-H.create_extensions = function(Extensions)
-  H.harpoon_plugin:extend({
-    [Extensions.event_names.ADD] = H.update,
-  })
-  H.harpoon_plugin:extend({
-    [Extensions.event_names.REMOVE] = H.update,
-  })
-end
-
-H.update_data = function()
-  H.data.list_length = H.get_list():length()
-  H.data.buffer_idx = H.buffer_idx()
+---@param list HarpoonList
+H.update_data = function(list)
+  H.data.list_length = list:length()
+  H.data.buffer_idx = H.buffer_idx(list)
 end
 
 -- To be invoked on any harpoon-related event
 -- Performs action on_update if present
 H.update = function()
-  H.update_data()
+  H.update_data(H.get_list())
   H.cached_result = nil -- the format function should recompute
 
   local on_update = H.get_config().on_update
   if on_update then on_update() end
 end
 
-H.initialize = function() H.update_data() end
+H.initialize = function() H.update_data(H.get_list()) end
 
 -- Return either the icon or an empty string
 ---@return string
