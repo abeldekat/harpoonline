@@ -25,7 +25,7 @@ Harpoonline.config = {
   ---@type string
   icon = '󰀱', -- An empty string disables showing the icon
 
-  -- Harpoon:list() retrieves the default list: The name of that list is nil.
+  -- Harpoon:list(), without a name, retrieves the default list:
   -- default_list_name: Configures the display name for the default list.
   ---@type string
   default_list_name = '',
@@ -96,6 +96,7 @@ H.default_config = vim.deepcopy(Harpoonline.config)
 
 ---@class HarpoonLineData
 H.data = {
+  -- Harpoon's default list is in use when list_name = nil
   --- @type string|nil
   list_name = nil, -- the name of the current list
   --- @type number
@@ -222,11 +223,12 @@ end
 H.builtin_short = function(data)
   local opts = H.get_config().formatter_opts.short
   local icon = H.make_icon()
+  local list_name = data.list_name and data.list_name or H.get_config().default_list_name
   return string.format(
     '%s%s%s[%s%d]',
     icon,
     icon == '' and '' or ' ',
-    data.list_name and data.list_name or '', -- no space after list name...
+    list_name, -- no space after list name...
     data.buffer_idx and string.format('%s%s', data.buffer_idx, opts.inner_separator) or '',
     data.list_length
   )
@@ -241,12 +243,13 @@ H.builtin_extended = function(data)
   -- build prefix
   local show_prefix = true -- show_empty_slots or data.number_of_tags > 0
   local icon = H.make_icon()
+  local list_name = data.list_name and data.list_name or H.get_config().default_list_name
   local prefix = not show_prefix and ''
     or string.format(
       '%s%s%s', --
       icon,
-      data.list_name and ' ' or '',
-      data.list_name and data.list_name or ''
+      list_name == '' and '' or ' ',
+      list_name
     )
 
   -- build slots
