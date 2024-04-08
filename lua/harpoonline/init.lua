@@ -188,14 +188,10 @@ end
 -- All other update scenarios are covered by listening to the BufEnter event.
 H.create_extensions = function(Extensions)
   H.harpoon_plugin:extend({
-    [Extensions.event_names.ADD] = function()
-      vim.schedule(H.update) -- actual add occurs after
-    end,
+    [Extensions.event_names.ADD] = H.update,
   })
   H.harpoon_plugin:extend({
-    [Extensions.event_names.REMOVE] = function()
-      vim.schedule(H.update) -- actual remove occurs after
-    end,
+    [Extensions.event_names.REMOVE] = H.update,
   })
 end
 
