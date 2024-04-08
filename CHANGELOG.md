@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.1](https://github.com/abeldekat/harpoonline/compare/v2.0.0...v2.0.1) (2024-04-08)
+
+
+### Bug Fixes
+
+* default_list_name: The display name for harpoon's default list ([#24](https://github.com/abeldekat/harpoonline/issues/24)) ([5b0839b](https://github.com/abeldekat/harpoonline/commit/5b0839b0de3e0036dbed08b3b269719d28eb3545))
+* Upstream harpoon, the extensions are called at the appropriate time. No need to defer anymore ([#21](https://github.com/abeldekat/harpoonline/issues/21)) ([b228c3f](https://github.com/abeldekat/harpoonline/commit/b228c3f712e30b87f372a9deae2b8a6522d6c421))
+
 ## [2.0.0](https://github.com/abeldekat/harpoonline/compare/v1.3.0...v2.0.0) (2024-03-29)
 
 
