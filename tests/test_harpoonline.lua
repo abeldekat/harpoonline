@@ -1,7 +1,6 @@
 local MiniTest = require('mini.test')
 local new_set = MiniTest.new_set
 local eq = MiniTest.expect.equality
--- local expect = MiniTest.expect
 
 ---@class MiniTestChildNeovim
 ---@field stop function
@@ -9,7 +8,6 @@ local eq = MiniTest.expect.equality
 ---@field lua function
 ---@field lua_get function
 ---@field cmd function
----@field api function
 
 ---@type MiniTestChildNeovim
 local child = MiniTest.new_child_neovim() -- Create (but not start) child Neovim object
@@ -138,6 +136,15 @@ T['format()']['extended']['remove item'] = function()
   add_files_to_list({ '1', '2', '3' })
   child.lua([[ require("harpoon"):list():remove_at(3) ]])
   eq(child.lua_get([[ M.format() ]]), icon .. '  1  2 ')
+end
+T['format()']['extended']['remove all items'] = function()
+  child.lua([[M.setup()]])
+  add_files_to_list({ '1', '2' })
+  child.lua([[ require("harpoon"):list():remove_at(2) ]])
+  child.lua([[ require("harpoon"):list():remove_at(1) ]])
+  eq(child.lua_get([[ M.format() ]]), icon .. '  1 ') -- should be empty
+
+  MiniTest.add_note('Incorrect, not empty!  See harpoon issue #555')
 end
 T['format()']['extended']['switch list'] = function()
   child.lua([[M.setup()]])
