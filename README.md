@@ -245,8 +245,8 @@ Example:
 ```lua
 local Harpoonline = require("harpoonline")
 Harpoonline.setup({
-    ---@param data HarpoonlineData
-    ---@return string
+  ---@param data HarpoonlineData
+  ---@return string
   custom_formatter = function(data)
     return string.format( -- very short, without the length of the harpoon list
       "%s%s%s",
