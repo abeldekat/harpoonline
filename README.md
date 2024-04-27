@@ -159,10 +159,7 @@ Harpoonline.config = {
       indicators = { ' 1 ', ' 2 ', ' 3 ', ' 4 ' },
       active_indicators = { '[1]', '[2]', '[3]', '[4]' },
 
-      -- 1 More indicators than items in the harpoon list:
-      empty_slot = '', -- ' · ', -- middledot. Disable using empty string
-
-      -- 2 Less indicators than items in the harpoon list
+      -- Less indicators than items in the harpoon list
       more_marks_indicator = ' … ', -- horizontal elipsis. Disable using empty string
       more_marks_active_indicator = '[…]', -- Disable using empty string
     },
@@ -175,7 +172,7 @@ Harpoonline.config = {
   custom_formatter = nil, -- use this formatter when configured
 
   ---@type fun()|nil
-  on_update = nil, -- optional action to perform after the line has been rebuild
+  on_update = nil, -- Recommended: trigger the client when the line has been rebuild.
 }
 ```
 
@@ -198,7 +195,7 @@ Output B: :anchor:  ` 1 [2] 3 `
 
 **Note**: Five marks, the fifth mark is the active buffer:
 
-Output B: 󰛢  ` 1  2  3  4 […] `
+Output B: :anchor:  ` 1  2  3  4 […] `
 
 #### The "short" built-in
 
@@ -212,22 +209,21 @@ Output B: :anchor:  `[2|3]`
 
 ```lua
 Harpoonline.setup({
-  -- formatter = "extended", -- configure the default formatter
+  -- config
   formatter_opts = {
     extended = { -- remove all spaces...
       indicators = { "1", "2", "3", "4" },
-      empty_slot = "·",
       more_marks_indicator = "…", -- horizontal elipsis. Disable with empty string
       more_marks_active_indicator = "[…]", -- Disable with empty string
     },
   },
-  on_update = on_update,
+  -- more config
 })
 ```
 
-Output A: :anchor:  `123·`
+Output A: :anchor:  `123`
 
-Output B: :anchor:  `1[2]3·`
+Output B: :anchor:  `1[2]3`
 
 #### Use a custom formatter
 
@@ -243,24 +239,26 @@ The following data is kept up-to-date internally, to be processed by formatters:
 Example:
 
 ```lua
-local Harpoonline = require("harpoonline")
 Harpoonline.setup({
+  -- config
   ---@param data HarpoonlineData
+  ---@param opts HarpoonLineConfig
   ---@return string
-  custom_formatter = function(data)
+  custom_formatter = function(data,opts)
     return string.format( -- very short, without the length of the harpoon list
       "%s%s%s",
-      "➡️ ",
+      opts.icon .. " ",
       data.list_name and string.format("%s ", data.list_name) or "",
       data.buffer_idx and string.format("%d", data.buffer_idx) or "-"
     )
   end
+  -- more config
 })
 ```
 
-Output A: :arrow_right:  `-`
+Output A: :anchor:  `-`
 
-Output B: :arrow_right:  `2`
+Output B: :anchor:  `2`
 
 *Note*: You can also use inner highlights in the formatter function.
 See the example recipe for NvChad.
@@ -405,7 +403,6 @@ return M
 
 - @theprimeagen: Harpoon is the most important part of my workflow.
 - @echasnovski: The structure of this plugin is heavily based on [mini.nvim]
-- @letieu: The `extended` formatter is inspired by plugin [harpoon-lualine]
 
 [harpoon2]: https://github.com/ThePrimeagen/harpoon/tree/harpoon2
 [mini.statusline]: https://github.com/echasnovski/mini.statusline

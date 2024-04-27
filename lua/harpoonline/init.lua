@@ -6,7 +6,7 @@
 ---@field buffer_idx number|nil -- the mark of the current buffer if harpooned
 
 --The signature of a formatter function:
----@alias HarpoonlineFormatter fun(data: HarpoonlineData): string
+---@alias HarpoonlineFormatter fun(data: HarpoonlineData, opts: HarpoonLineConfig): string
 
 ---@class HarpoonLine
 local Harpoonline = {}
@@ -56,10 +56,7 @@ Harpoonline.config = {
       indicators = { ' 1 ', ' 2 ', ' 3 ', ' 4 ' },
       active_indicators = { '[1]', '[2]', '[3]', '[4]' },
 
-      -- 1 More indicators than items in the harpoon list:
-      empty_slot = '', -- ' · ', -- middledot. Disable using empty string
-
-      -- 2 Less indicators than items in the harpoon list
+      -- Less indicators than items in the harpoon list
       more_marks_indicator = ' … ', -- horizontal elipsis. Disable using empty string
       more_marks_active_indicator = '[…]', -- Disable using empty string
     },
@@ -72,7 +69,7 @@ Harpoonline.config = {
   custom_formatter = nil, -- use this formatter when configured
 
   ---@type fun()|nil
-  on_update = nil, -- optional action to perform after the line has been rebuild.
+  on_update = nil, -- Recommended: trigger the client when the line has been rebuild.
 }
 
 -- Module functionality =======================================================
@@ -202,7 +199,7 @@ H.produce = function()
     -- list_length = list:length(), -- NOTE: Harpoon issue #555
     list_length = #list.items,
     buffer_idx = H.current_buffer_idx,
-  })
+  }, H.get_config())
 end
 
 -- Return either the icon or an empty string
@@ -213,9 +210,10 @@ H.make_icon = function()
 end
 
 ---@param data HarpoonlineData
+---@param opts HarpoonLineConfig
 ---@return string
-H.builtin_short = function(data)
-  local opts = H.get_config().formatter_opts.short
+H.builtin_short = function(data, opts)
+  opts = opts.formatter_opts.short
   local icon = H.make_icon()
   local list_name = data.list_name and data.list_name or H.get_config().default_list_name
   return string.format(
@@ -229,40 +227,28 @@ H.builtin_short = function(data)
 end
 
 ---@param data HarpoonlineData
+---@param opts HarpoonLineConfig
 ---@return string
-H.builtin_extended = function(data)
-  local opts = H.get_config().formatter_opts.extended
-  local show_empty_slots = opts.empty_slot and opts.empty_slot ~= ''
+H.builtin_extended = function(data, opts)
+  opts = opts.formatter_opts.extended
 
-  -- build prefix
-  local show_prefix = true -- show_empty_slots or data.number_of_tags > 0
   local icon = H.make_icon()
   local list_name = data.list_name and data.list_name or H.get_config().default_list_name
-  local prefix = not show_prefix and ''
-    or string.format(
-      '%s%s%s', --
-      icon,
-      list_name == '' and '' or ' ',
-      list_name
-    )
+  local prefix = string.format('%s%s%s', icon, list_name == '' and '' or ' ', list_name)
 
-  -- build slots
-  local nr_of_slots = #opts.indicators
-  local status = {}
-  for i = 1, nr_of_slots do
-    if i > data.list_length then -- more slots then ...
-      if show_empty_slots then table.insert(status, opts.empty_slot) end
-    elseif i == data.buffer_idx then
-      table.insert(status, opts.active_indicators[i])
-    else
-      table.insert(status, opts.indicators[i])
-    end
-  end
-  -- add more marks indicator
-  if data.list_length > nr_of_slots then -- more marks then...
-    local ind = opts.more_marks_indicator
-    if data.buffer_idx and data.buffer_idx > nr_of_slots then ind = opts.more_marks_active_indicator end
-    if ind and ind ~= '' then table.insert(status, ind) end
+  local max_slots = #opts.indicators
+  local slot = 0
+  ---@type string[]
+  local status = vim.tbl_map(function(indicator) -- slots and corresponding tags
+    slot = slot + 1
+    return data.buffer_idx and data.buffer_idx == slot and opts.active_indicators[slot] or indicator
+  end, vim.list_slice(opts.indicators, 1, math.min(max_slots, data.list_length)))
+
+  if max_slots < data.list_length then -- tags without slots
+    local ind = data.buffer_idx and data.buffer_idx > max_slots and opts.more_marks_active_indicator
+      or opts.more_marks_indicator
+
+    if ind and ind ~= '' then status[slot + 1] = ind end
   end
 
   prefix = prefix == '' and prefix or prefix .. ' '

@@ -103,17 +103,6 @@ T['format()']['extended']['custom indicators'] = function()
   add_files_to_list({ '1', '2' })
   eq(child.lua_get([[ M.format() ]]), icon .. ' A-B-')
 end
-T['format()']['extended']['empty slots'] = function()
-  child.lua([[
-    M.setup({
-      formatter_opts = { extended = {
-        empty_slot = ' · '
-      }}
-    })
-  ]])
-  add_files_to_list({ '1', '2' })
-  eq(child.lua_get([[ M.format() ]]), icon .. '  1 [2] ·  · ')
-end
 T['format()']['extended']['more marks'] = function()
   child.lua([[
     M.setup({
