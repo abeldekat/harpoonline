@@ -76,26 +76,26 @@ T['format()'] = new_set()
 --          ╭─────────────────────────────────────────────────────────╮
 --          │                    Default formatter                    │
 --          ╰─────────────────────────────────────────────────────────╯
-T['format()']['extended'] = new_set()
-T['format()']['extended']['one harpoon'] = function()
+T['format()']['default'] = new_set()
+T['format()']['default']['one harpoon'] = function()
   child.lua([[M.setup()]])
   add_files_to_list({ '1' })
   eq(child.lua_get([[ M.format() ]]), icon .. ' [1]')
 end
-T['format()']['extended']['four harpoons'] = function()
+T['format()']['default']['four harpoons'] = function()
   child.lua([[M.setup()]])
   add_files_to_list({ '1', '2', '3', '4' })
   eq(child.lua_get([[ M.format() ]]), icon .. '  1  2  3 [4]')
 end
-T['format()']['extended']['six harpoons'] = function()
+T['format()']['default']['six harpoons'] = function()
   child.lua([[M.setup()]])
   add_files_to_list({ '1', '2', '3', '4', '5', '6' })
   eq(child.lua_get([[ M.format() ]]), icon .. '  1  2  3  4 [' .. more .. ']')
 end
-T['format()']['extended']['custom indicators'] = function()
+T['format()']['default']['custom indicators'] = function()
   child.lua([[
     M.setup({
-      formatter_opts = { extended = {
+      formatter_opts = { default = {
         indicators = {"A", "B"}, active_indicators = {"-A-", "-B-"}
       }}
     })
@@ -103,10 +103,10 @@ T['format()']['extended']['custom indicators'] = function()
   add_files_to_list({ '1', '2' })
   eq(child.lua_get([[ M.format() ]]), icon .. ' A-B-')
 end
-T['format()']['extended']['more marks'] = function()
+T['format()']['default']['more marks'] = function()
   child.lua([[
     M.setup({
-      formatter_opts = { extended = {
+      formatter_opts = { default = {
         more_marks_indicator = '', more_marks_active_indicator = '',
       }}
     })
@@ -114,19 +114,19 @@ T['format()']['extended']['more marks'] = function()
   add_files_to_list({ '1', '2', '3', '4', '5', '6' })
   eq(child.lua_get([[ M.format() ]]), icon .. '  1  2  3  4 ')
 end
-T['format()']['extended']['buffer not harpooned'] = function()
+T['format()']['default']['buffer not harpooned'] = function()
   child.lua([[M.setup()]])
   add_files_to_list({ '1', '2', '3', '4', '5' })
   edit('9')
   eq(child.lua_get([[ M.format() ]]), icon .. '  1  2  3  4  ' .. more .. ' ')
 end
-T['format()']['extended']['remove item'] = function()
+T['format()']['default']['remove item'] = function()
   child.lua([[M.setup()]])
   add_files_to_list({ '1', '2', '3' })
   child.lua([[ require("harpoon"):list():remove_at(3) ]])
   eq(child.lua_get([[ M.format() ]]), icon .. '  1  2 ')
 end
-T['format()']['extended']['remove all items'] = function()
+T['format()']['default']['remove all items'] = function()
   child.lua([[M.setup()]])
   add_files_to_list({ '1', '2' })
   child.lua([[ require("harpoon"):list():remove_at(2) ]])
@@ -136,7 +136,7 @@ T['format()']['extended']['remove all items'] = function()
   -- eq(child.lua_get([[ M.format() ]]), icon .. '  1 ') -- should be empty
   -- MiniTest.add_note('Incorrect, not empty!  See harpoon issue #555')
 end
-T['format()']['extended']['switch list'] = function()
+T['format()']['default']['switch list'] = function()
   child.lua([[M.setup()]])
   add_files_to_list({ '1', '2' }, 'dev')
   child.lua([[
@@ -146,7 +146,7 @@ T['format()']['extended']['switch list'] = function()
   ]])
   eq(child.lua_get([[ M.format() ]]), icon .. ' dev  1 [2]')
 end
-T['format()']['extended']['default_list_name'] = function()
+T['format()']['default']['default_list_name'] = function()
   child.lua([[M.setup({default_list_name="mainlist"})]])
   add_files_to_list({ '1', '2' })
   eq(child.lua_get([[ M.format() ]]), icon .. ' mainlist  1 [2]')

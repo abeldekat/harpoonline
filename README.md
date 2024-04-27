@@ -15,7 +15,7 @@ that information can be useful. For example, in statuslines and the tabline.
     - [Using mini.deps and mini.statusline](#using-minideps-and-ministatusline)
   - [Configuration](#configuration)
     - [Formatters](#formatters)
-      - [The "extended" built-in](#the-extended-built-in)
+      - [The "default" built-in](#the-default-built-in)
       - [The "short" built-in](#the-short-built-in)
       - [Customize a built-in](#customize-a-built-in)
       - [Use a custom formatter](#use-a-custom-formatter)
@@ -149,11 +149,11 @@ Harpoonline.config = {
   ---@type string
   default_list_name = '',
 
-  ---@type "extended" | "short"
-  formatter = 'extended', -- use a built-in formatter
+  ---@type "default" | "short"
+  formatter = 'default', -- use a built-in formatter
 
   formatter_opts = {
-    extended = {
+    default = {
       -- An indicator corresponds to a position in the harpoon list
       -- Suggestion: Add an indicator for each configured "select" keybinding
       indicators = { ' 1 ', ' 2 ', ' 3 ', ' 4 ' },
@@ -185,9 +185,9 @@ Scenario's:
 - A: 3 marks, the current buffer is not harpooned
 - B: 3 marks, the current buffer is harpooned on mark 2
 
-#### The "extended" built-in
+#### The "default" built-in
 
-This is the default formatter. Default options: `config.formatter_opts.extended`
+Default options: `config.formatter_opts.default`
 
 Output A: :anchor:  ` 1  2  3 `
 
@@ -211,7 +211,7 @@ Output B: :anchor:  `[2|3]`
 Harpoonline.setup({
   -- config
   formatter_opts = {
-    extended = { -- remove all spaces...
+    default = { -- remove all spaces...
       indicators = { "1", "2", "3", "4" },
       more_marks_indicator = "…", -- horizontal elipsis. Disable with empty string
       more_marks_active_indicator = "[…]", -- Disable with empty string
@@ -262,6 +262,8 @@ Output B: :anchor:  `2`
 
 *Note*: You can also use inner highlights in the formatter function.
 See the example recipe for NvChad.
+
+For other ideas, have a look at the implementation of the built-in formatters.
 
 ## Harpoon lists
 

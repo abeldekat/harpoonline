@@ -46,11 +46,11 @@ Harpoonline.config = {
   ---@type string
   default_list_name = '',
 
-  ---@type "extended" | "short"
-  formatter = 'extended', -- use a builtin formatter
+  ---@type "default" | "short"
+  formatter = 'default', -- use a builtin formatter
 
   formatter_opts = {
-    extended = {
+    default = {
       -- An indicator corresponds to a position in the harpoon list
       -- Suggestion: Add an indicator for each configured "select" keybinding
       indicators = { ' 1 ', ' 2 ', ' 3 ', ' 4 ' },
@@ -76,7 +76,7 @@ Harpoonline.config = {
 
 ---@class HarpoonlineFormatterConfig
 Harpoonline.formatters = {
-  extended = function() return H.builtin_extended end,
+  default = function() return H.builtin_default end,
   short = function() return H.builtin_short end,
 }
 
@@ -135,7 +135,7 @@ H.apply_config = function(config)
     H.formatter = config.custom_formatter
   else
     local builtin = Harpoonline.formatters[config.formatter]
-    H.formatter = builtin and builtin() or H.builtin_extended
+    H.formatter = builtin and builtin() or H.builtin_default
   end
 end
 
@@ -229,8 +229,8 @@ end
 ---@param data HarpoonlineData
 ---@param opts HarpoonLineConfig
 ---@return string
-H.builtin_extended = function(data, opts)
-  opts = opts.formatter_opts.extended
+H.builtin_default = function(data, opts)
+  opts = opts.formatter_opts.default
 
   local icon = H.make_icon()
   local list_name = data.list_name and data.list_name or H.get_config().default_list_name
