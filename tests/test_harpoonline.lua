@@ -142,9 +142,10 @@ T['format()']['extended']['remove all items'] = function()
   add_files_to_list({ '1', '2' })
   child.lua([[ require("harpoon"):list():remove_at(2) ]])
   child.lua([[ require("harpoon"):list():remove_at(1) ]])
-  eq(child.lua_get([[ M.format() ]]), icon .. '  1 ') -- should be empty
+  eq(child.lua_get([[ M.format() ]]), icon .. ' ') -- should be empty
 
-  MiniTest.add_note('Incorrect, not empty!  See harpoon issue #555')
+  -- eq(child.lua_get([[ M.format() ]]), icon .. '  1 ') -- should be empty
+  -- MiniTest.add_note('Incorrect, not empty!  See harpoon issue #555')
 end
 T['format()']['extended']['switch list'] = function()
   child.lua([[M.setup()]])
@@ -215,16 +216,14 @@ end
 T['format()']['custom'] = function()
   child.lua([[
     M.setup({
-      custom_formatter = M.gen_formatter(
-        function(data)
-          return string.format("%s%s%s%s",
-            "Harpoonline: ",
-            data.buffer_idx and "Buffer is harpooned " or "Buffer is not harpooned ",
-            "in list ",
-            data.list_name and data.list_name or "default"
-          )
-        end
-      )
+      custom_formatter = function(data)
+        return string.format("%s%s%s%s",
+          "Harpoonline: ",
+          data.buffer_idx and "Buffer is harpooned " or "Buffer is not harpooned ",
+          "in list ",
+          data.list_name and data.list_name or "default"
+        )
+      end
     })
   ]])
   add_files_to_list({ '1', '2' })

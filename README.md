@@ -140,11 +140,11 @@ The following configuration is implied when calling `setup` without arguments:
 ```lua
 ---@class HarpoonLineConfig
 Harpoonline.config = {
-  -- other nice icons: "󰀱", "", "󱡅"
+  -- other nice icons: "󰀱", "", "󱡅", "󰛢"
   ---@type string
   icon = '󰀱', -- An empty string disables showing the icon
 
-  -- Harpoon:list(), without a name, retrieves the default list:
+  -- Harpoon:list(), when name is nil, retrieves the default list:
   -- default_list_name: Configures the display name for the default list.
   ---@type string
   default_list_name = '',
@@ -171,11 +171,11 @@ Harpoonline.config = {
     },
   },
 
-  ---@type fun():string|nil
+  ---@type HarpoonlineFormatter
   custom_formatter = nil, -- use this formatter when configured
 
   ---@type fun()|nil
-  on_update = nil, -- optional action to perform after update
+  on_update = nil, -- optional action to perform after the line has been rebuild
 }
 ```
 
@@ -234,16 +234,10 @@ Output B: :anchor:  `1[2]3·`
 The following data is kept up-to-date internally, to be processed by formatters:
 
 ```lua
----@class HarpoonLineData
-H.data = {
-  -- Harpoon's default list is in use when list_name = nil
-  --- @type string|nil
-  list_name = nil, -- the name of the current list
-  --- @type number
-  list_length = 0, -- the length of the current list
-  --- @type number|nil
-  buffer_idx = nil, -- the mark of the current buffer if harpooned
-}
+---@class HarpoonlineData
+---@field list_name string|nil -- the name of the current list
+---@field list_length number -- the length of the current list
+---@field buffer_idx number|nil -- the mark of the current buffer if harpooned
 ```
 
 Example:
@@ -251,18 +245,16 @@ Example:
 ```lua
 local Harpoonline = require("harpoonline")
 Harpoonline.setup({
-  custom_formatter = Harpoonline.gen_formatter(
-    ---@param data HarpoonLineData
+    ---@param data HarpoonlineData
     ---@return string
-    function(data)
-      return string.format( -- very short, without the length of the harpoon list
-        "%s%s%s",
-        "➡️ ",
-        data.list_name and string.format("%s ", data.list_name) or "",
-        data.buffer_idx and string.format("%d", data.buffer_idx) or "-"
-      )
-    end
-  ),
+  custom_formatter = function(data)
+    return string.format( -- very short, without the length of the harpoon list
+      "%s%s%s",
+      "➡️ ",
+      data.list_name and string.format("%s ", data.list_name) or "",
+      data.buffer_idx and string.format("%d", data.buffer_idx) or "-"
+    )
+  end
 })
 ```
 
