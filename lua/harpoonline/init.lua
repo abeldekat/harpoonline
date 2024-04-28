@@ -49,14 +49,12 @@ Harpoonline.config = {
 
   formatter_opts = {
     default = {
-      -- An indicator corresponds to a position in the harpoon list
-      -- Suggestion: Add an indicator for each configured "select" keybinding
-      indicators = { ' 1 ', ' 2 ', ' 3 ', ' 4 ' },
-      active_indicators = { '[1]', '[2]', '[3]', '[4]' },
-
-      -- Less indicators than items in the harpoon list
-      more_marks_indicator = ' … ', -- horizontal elipsis. Disable using empty string
-      more_marks_active_indicator = '[…]', -- Disable using empty string
+      inactive = ' %s ', -- including spaces
+      active = '[%s]',
+      -- Number of slots to display:
+      max_slots = 4, -- Suggestion: as many as there are "select" keybindings
+      -- The number of items in the harpoon list exceeds max_slots:
+      more = '…', -- horizontal elipsis. Disable using empty string
     },
     short = {
       inner_separator = '|',
@@ -200,6 +198,9 @@ H.produce = function()
   }, H.get_config())
 end
 
+-- Returns the name of the list, or the configured default_list_name
+H.make_list_name = function(name) return name and name or H.get_config().default_list_name end
+
 -- Return either the icon or an empty string
 ---@return string
 H.make_icon = function()
@@ -211,15 +212,16 @@ end
 ---@param opts HarpoonLineConfig
 ---@return string
 H.builtin_short = function(data, opts)
-  opts = opts.formatter_opts.short
   local icon = H.make_icon()
-  local list_name = data.list_name and data.list_name or H.get_config().default_list_name
+  local list_name = H.make_list_name(data.list_name)
+
+  local o = opts.formatter_opts.short
   return string.format(
     '%s%s%s[%s%d]',
     icon,
     icon == '' and '' or ' ',
     list_name, -- no space after list name...
-    data.active_idx and string.format('%s%s', data.active_idx, opts.inner_separator) or '',
+    data.active_idx and string.format('%s%s', data.active_idx, o.inner_separator) or '',
     #data.items
   )
 end
@@ -228,26 +230,24 @@ end
 ---@param opts HarpoonLineConfig
 ---@return string
 H.builtin_default = function(data, opts)
-  opts = opts.formatter_opts.default
-
-  local max_slots = #opts.indicators
-  local slot = 0
-  local slots = vim.tbl_map(function(ind) -- slots and corresponding tags
-    slot = slot + 1
-    return data.active_idx and data.active_idx == slot and opts.active_indicators[slot] or ind
-  end, vim.list_slice(opts.indicators, 1, math.min(max_slots, #data.items)))
-
-  if max_slots < #data.items then -- tags without slots
-    local ind = data.active_idx and data.active_idx > max_slots and opts.more_marks_active_indicator
-      or opts.more_marks_indicator
-
-    if ind and ind ~= '' then slots[slot + 1] = ind end
-  end
-
-  local list_name = data.list_name and data.list_name or H.get_config().default_list_name
+  local list_name = H.make_list_name(data.list_name)
   local header = string.format('%s%s%s', H.make_icon(), list_name == '' and '' or ' ', list_name)
-  header = header == '' and header or header .. ' '
-  return header .. table.concat(slots)
+
+  local o = opts.formatter_opts.default
+  local idx = data.active_idx
+  local slot = 0
+  local slots = vim.tbl_map(function()
+    slot = slot + 1
+    return string.format(idx and idx == slot and o.active or o.inactive, slot)
+  end, vim.list_slice(data.items, 1, math.min(o.max_slots, #data.items)))
+
+  if #data.items > o.max_slots then
+    if o.more and o.more ~= '' then
+      local fmt = idx and idx > o.max_slots and o.active or o.inactive
+      table.insert(slots, string.format(fmt, o.more))
+    end
+  end
+  return header .. (header == '' and '' or ' ') .. table.concat(slots)
 end
 
 return Harpoonline

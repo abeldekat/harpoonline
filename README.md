@@ -103,7 +103,7 @@ local function config()
     if MiniStatusline.is_truncated(args.trunc_width) or isnt_normal_buffer() then
       return ""
     end
-    return Harpoonline.format() ---->  produce the info
+    return Harpoonline.format()
   end
   local function active() -- Hook, see mini.statusline setup
     -- copy any lines from mini.statusline, H.default_content_active:
@@ -156,14 +156,12 @@ Harpoonline.config = {
 
   formatter_opts = {
     default = {
-      -- An indicator corresponds to a position in the harpoon list
-      -- Suggestion: Add an indicator for each configured "select" keybinding
-      indicators = { ' 1 ', ' 2 ', ' 3 ', ' 4 ' },
-      active_indicators = { '[1]', '[2]', '[3]', '[4]' },
-
-      -- Less indicators than items in the harpoon list
-      more_marks_indicator = ' … ', -- horizontal elipsis. Disable using empty string
-      more_marks_active_indicator = '[…]', -- Disable using empty string
+      inactive = ' %s ', -- including spaces
+      active = '[%s]',
+      -- Max number of slots to display:
+      max_slots = 4, -- Suggestion: as many as there are "select" keybindings
+      -- The number of items in the harpoon list exceeds max_slots:
+      more = '…', -- horizontal elipsis. Disable using empty string
     },
     short = {
       inner_separator = '|',
@@ -214,9 +212,8 @@ Harpoonline.setup({
   -- config
   formatter_opts = {
     default = { -- remove all spaces...
-      indicators = { "1", "2", "3", "4" },
-      more_marks_indicator = "…", -- horizontal elipsis. Disable with empty string
-      more_marks_active_indicator = "[…]", -- Disable with empty string
+      inactive = "%s",
+      active = "[%s]",
     },
   },
   -- more config

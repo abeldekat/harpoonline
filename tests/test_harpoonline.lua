@@ -92,22 +92,11 @@ T['format()']['default']['six harpoons'] = function()
   add_files_to_list({ '1', '2', '3', '4', '5', '6' })
   eq(child.lua_get([[ M.format() ]]), icon .. '  1  2  3  4 [' .. more .. ']')
 end
-T['format()']['default']['custom indicators'] = function()
-  child.lua([[
-    M.setup({
-      formatter_opts = { default = {
-        indicators = {"A", "B"}, active_indicators = {"-A-", "-B-"}
-      }}
-    })
-  ]])
-  add_files_to_list({ '1', '2' })
-  eq(child.lua_get([[ M.format() ]]), icon .. ' A-B-')
-end
 T['format()']['default']['more marks'] = function()
   child.lua([[
     M.setup({
       formatter_opts = { default = {
-        more_marks_indicator = '', more_marks_active_indicator = '',
+        more = ""
       }}
     })
   ]])
