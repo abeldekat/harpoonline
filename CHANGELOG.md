@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/abeldekat/harpoonline/compare/v2.0.1...v3.0.0) (2024-04-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* Breaking changes for v3 ([#25](https://github.com/abeldekat/harpoonline/issues/25))
+
+### Code Refactoring
+
+* Breaking changes for v3 ([#25](https://github.com/abeldekat/harpoonline/issues/25)) ([a134ea3](https://github.com/abeldekat/harpoonline/commit/a134ea3d9bcccf988569e2fbe4f00dfff77fdc34))
+
 ## [2.0.1](https://github.com/abeldekat/harpoonline/compare/v2.0.0...v2.0.1) (2024-04-08)
 
 
