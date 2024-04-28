@@ -59,7 +59,7 @@ _Heirline in AstroNvim v4_
 
 _Custom statusline in NvChad v2.5_
 
-_Note_The video demonstrates the first release.
+_Note_The video demonstrates the first release and will become outdated.
 
 
 FEATURES                                    *harpoonline-harpoonline-features*
