@@ -1,9 +1,9 @@
--- Module definition ==========================================================
+-- Moddefinition ==========================================================
 
 ---@class HarpoonlineData
 ---@field list_name string|nil -- the name of the current list
----@field list_length number -- the length of the current list
----@field buffer_idx number|nil -- the mark of the current buffer if harpooned
+---@field items HarpoonItem[] -- the items of the current list
+---@field active_idx number|nil -- the harpoon index of the current buffer
 
 --The signature of a formatter function:
 ---@alias HarpoonlineFormatter fun(data: HarpoonlineData, opts: HarpoonLineConfig): string
@@ -18,16 +18,14 @@ Harpoonline.setup = function(config)
   if not has_harpoon then return end
 
   H.harpoon_plugin = Harpoon
-
-  config = H.setup_config(config)
-  H.apply_config(config)
+  H.apply_config(H.setup_config(config))
 
   H.produce() -- initialize the line
-  if config.on_update then
+  if H.get_config().on_update then
     local produce = H.produce
-    H.produce = function() -- composition with on_update
+    H.produce = function() -- composition: add on_update
       produce()
-      config.on_update() -- notify clients
+      H.get_config().on_update() -- notify clients
     end
   end
 
@@ -83,7 +81,7 @@ Harpoonline.formatters = {
 -- Return true is the current buffer is harpooned, false otherwise
 -- Useful for extra highlighting
 ---@return boolean
-Harpoonline.is_buffer_harpooned = function() return H.current_buffer_idx ~= nil end
+Harpoonline.is_buffer_harpooned = function() return H.active_idx ~= nil end
 
 -- The function to be used by consumers
 ---@return string
@@ -104,7 +102,7 @@ H.cached_line = ''
 ---@type string | nil
 H.list_name = nil
 ---@type number | nil
-H.current_buffer_idx = nil
+H.active_idx = nil
 
 -- Helper functionality =======================================================
 
@@ -175,7 +173,7 @@ end
 -- Otherwise, return nil
 ---@param list HarpoonList
 ---@return number|nil
-H.find_current_buffer_idx = function(list)
+H.find_active_idx = function(list)
   if vim.bo.buftype ~= '' then return end -- not a normal buffer
 
   -- if list:length() == 0 --  NOTE: Harpoon issue #555
@@ -192,13 +190,13 @@ end
 H.produce = function()
   ---@type HarpoonList
   local list = H.harpoon_plugin:list(H.list_name)
-  H.current_buffer_idx = H.find_current_buffer_idx(list)
+  H.active_idx = H.find_active_idx(list)
 
   H.cached_line = H.formatter({
     list_name = H.list_name,
     -- list_length = list:length(), -- NOTE: Harpoon issue #555
-    list_length = #list.items,
-    buffer_idx = H.current_buffer_idx,
+    items = list.items,
+    active_idx = H.active_idx,
   }, H.get_config())
 end
 
@@ -221,8 +219,8 @@ H.builtin_short = function(data, opts)
     icon,
     icon == '' and '' or ' ',
     list_name, -- no space after list name...
-    data.buffer_idx and string.format('%s%s', data.buffer_idx, opts.inner_separator) or '',
-    data.list_length
+    data.active_idx and string.format('%s%s', data.active_idx, opts.inner_separator) or '',
+    #data.items
   )
 end
 
@@ -232,27 +230,24 @@ end
 H.builtin_default = function(data, opts)
   opts = opts.formatter_opts.default
 
-  local icon = H.make_icon()
-  local list_name = data.list_name and data.list_name or H.get_config().default_list_name
-  local prefix = string.format('%s%s%s', icon, list_name == '' and '' or ' ', list_name)
-
   local max_slots = #opts.indicators
   local slot = 0
-  ---@type string[]
-  local status = vim.tbl_map(function(indicator) -- slots and corresponding tags
+  local slots = vim.tbl_map(function(ind) -- slots and corresponding tags
     slot = slot + 1
-    return data.buffer_idx and data.buffer_idx == slot and opts.active_indicators[slot] or indicator
-  end, vim.list_slice(opts.indicators, 1, math.min(max_slots, data.list_length)))
+    return data.active_idx and data.active_idx == slot and opts.active_indicators[slot] or ind
+  end, vim.list_slice(opts.indicators, 1, math.min(max_slots, #data.items)))
 
-  if max_slots < data.list_length then -- tags without slots
-    local ind = data.buffer_idx and data.buffer_idx > max_slots and opts.more_marks_active_indicator
+  if max_slots < #data.items then -- tags without slots
+    local ind = data.active_idx and data.active_idx > max_slots and opts.more_marks_active_indicator
       or opts.more_marks_indicator
 
-    if ind and ind ~= '' then status[slot + 1] = ind end
+    if ind and ind ~= '' then slots[slot + 1] = ind end
   end
 
-  prefix = prefix == '' and prefix or prefix .. ' '
-  return prefix .. table.concat(status)
+  local list_name = data.list_name and data.list_name or H.get_config().default_list_name
+  local header = string.format('%s%s%s', H.make_icon(), list_name == '' and '' or ' ', list_name)
+  header = header == '' and header or header .. ' '
+  return header .. table.concat(slots)
 end
 
 return Harpoonline

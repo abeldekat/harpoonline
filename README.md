@@ -39,6 +39,8 @@ that information can be useful. For example, in statuslines and the tabline.
 ![1710925071](https://github.com/abeldekat/harpoonline/assets/58370433/4b911ed1-428d-4a64-ba9d-f67ba6438ce7)
 *Custom statusline in NvChad v2.5*
 
+*Note*: The video demonstrates the first release and will become outdated.
+
 ## Features
 
 - Supports multiple [harpoon2] lists.
@@ -232,11 +234,11 @@ The following data is kept up-to-date internally, to be processed by formatters:
 ```lua
 ---@class HarpoonlineData
 ---@field list_name string|nil -- the name of the current list
----@field list_length number -- the length of the current list
----@field buffer_idx number|nil -- the mark of the current buffer if harpooned
+---@field items HarpoonItem[] -- the items of the current list
+---@field active_idx number|nil -- the harpoon index of the current buffer
 ```
 
-Example:
+Example "very short":
 
 ```lua
 Harpoonline.setup({
@@ -249,7 +251,7 @@ Harpoonline.setup({
       "%s%s%s",
       opts.icon .. " ",
       data.list_name and string.format("%s ", data.list_name) or "",
-      data.buffer_idx and string.format("%d", data.buffer_idx) or "-"
+      data.active_idx and string.format("%d", data.active_idx) or "-"
     )
   end
   -- more config
@@ -260,10 +262,40 @@ Output A: :anchor:  `-`
 
 Output B: :anchor:  `2`
 
-*Note*: You can also use inner highlights in the formatter function.
-See the example recipe for NvChad.
+Example "letters":
 
-For other ideas, have a look at the implementation of the built-in formatters.
+```lua
+Harpoonline.setup({
+  -- config
+  ---@param data HarpoonlineData
+  ---@param opts HarpoonLineConfig
+  ---@return string
+  custom_formatter = function(data, opts)
+    local letters = { "j", "k", "l", "h" }
+    local idx = data.active_idx
+    local slot = 0
+    local slots = vim.tbl_map(function(letter)
+      slot = slot + 1
+      return idx and idx == slot and string.upper(letter) or letter
+    end, vim.list_slice(letters, 1, math.min(#letters, #data.items)))
+
+    local name = data.list_name and data.list_name or opts.default_list_name
+    local header = string.format("%s%s%s", opts.icon, name == "" and "" or " ", name)
+    return header .. " " .. table.concat(slots)
+  end,
+  -- more config
+})
+```
+
+Output A: :anchor:  `jkl`
+
+Output B: :anchor:  `jKl`
+
+*Note*:
+
+- You can also use inner highlights in the formatter function.
+See the example recipe for NvChad.
+- You can use the `harpoon` information inside each `data.items`
 
 ## Harpoon lists
 

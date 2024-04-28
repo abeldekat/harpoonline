@@ -205,10 +205,10 @@ end
 T['format()']['custom'] = function()
   child.lua([[
     M.setup({
-      custom_formatter = function(data)
+      custom_formatter = function(data, _)
         return string.format("%s%s%s%s",
           "Harpoonline: ",
-          data.buffer_idx and "Buffer is harpooned " or "Buffer is not harpooned ",
+          data.active_idx and "Buffer is harpooned " or "Buffer is not harpooned ",
           "in list ",
           data.list_name and data.list_name or "default"
         )
