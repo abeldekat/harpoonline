@@ -39,7 +39,7 @@ that information can be useful. For example, in statuslines and the tabline.
 ![1710925071](https://github.com/abeldekat/harpoonline/assets/58370433/4b911ed1-428d-4a64-ba9d-f67ba6438ce7)
 *Custom statusline in NvChad v2.5*
 
-*Note*: The video demonstrates the first release and will become outdated.
+*Note*: The video demonstrates the first release.
 
 ## Features
 
