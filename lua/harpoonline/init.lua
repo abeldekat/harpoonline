@@ -1,4 +1,4 @@
--- Moddefinition ==========================================================
+-- Module definition ==========================================================
 
 ---@class HarpoonlineData
 ---@field list_name string|nil -- the name of the current list
