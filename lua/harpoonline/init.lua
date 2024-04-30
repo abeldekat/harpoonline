@@ -165,6 +165,7 @@ end
 H.create_extensions = function(Extensions)
   H.harpoon_plugin:extend({ [Extensions.event_names.ADD] = H.produce })
   H.harpoon_plugin:extend({ [Extensions.event_names.REMOVE] = H.produce })
+  H.harpoon_plugin:extend({ [Extensions.event_names.REPLACE] = H.produce })
 end
 
 -- If the current buffer is harpooned, return the index of the harpoon mark
