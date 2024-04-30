@@ -4,12 +4,12 @@
 Table of Contents                              *harpoonline-table-of-contents*
 
 1. Harpoonline                                       |harpoonline-harpoonline|
-  - TOC                                          |harpoonline-harpoonline-toc|
   - Demo                                        |harpoonline-harpoonline-demo|
   - Features                                |harpoonline-harpoonline-features|
   - Requirements                        |harpoonline-harpoonline-requirements|
   - Setup                                      |harpoonline-harpoonline-setup|
   - Configuration                      |harpoonline-harpoonline-configuration|
+  - Formatters                            |harpoonline-harpoonline-formatters|
   - Harpoon lists                      |harpoonline-harpoonline-harpoon-lists|
   - Recipes                                  |harpoonline-harpoonline-recipes|
   - Related plugins                  |harpoonline-harpoonline-related-plugins|
@@ -23,29 +23,6 @@ Create up-to-date harpoon2
 <https://github.com/ThePrimeagen/harpoon/tree/harpoon2> information for any
 place where that information can be useful. For example, in statuslines and the
 tabline.
-
-
-TOC                                              *harpoonline-harpoonline-toc*
-
-- |harpoonline-harpoonline|
-    - |harpoonline-demo|
-    - |harpoonline-features|
-    - |harpoonline-requirements|
-    - |harpoonline-setup|
-        - |harpoonline-using-lazy.nvim-and-lualine|
-        - |harpoonline-using-mini.deps-and-mini.statusline|
-    - |harpoonline-configuration|
-        - |harpoonline-formatters|
-            - |harpoonline-the-"default"-built-in|
-            - |harpoonline-the-"short"-built-in|
-            - |harpoonline-customize-a-built-in|
-            - |harpoonline-use-a-custom-formatter|
-    - |harpoonline-harpoon-lists|
-    - |harpoonline-recipes|
-        - |harpoonline-heirline|
-        - |harpoonline-nvchad-statusline|
-    - |harpoonline-related-plugins|
-    - |harpoonline-acknowledgements|
 
 
 DEMO                                            *harpoonline-harpoonline-demo*
@@ -206,15 +183,18 @@ The following configuration is implied when calling `setup` without arguments:
 _Note_The icon does not display properly in the browser…
 
 
-FORMATTERS ~
+FORMATTERS                                *harpoonline-harpoonline-formatters*
 
 Scenario’s:
 
 - A: 3 marks, the current buffer is not harpooned
 - B: 3 marks, the current buffer is harpooned on mark 2
 
+_Note_More examples can be found in ak.config.ui.harpoonline
+<https://github.com/abeldekat/nvim_pde/blob/main/lua/ak/config/ui/harpoonline.lua>
 
-THE “DEFAULT” BUILT-IN
+
+THE “DEFAULT” BUILT-IN ~
 
 Default options: `config.formatter_opts.default`
 
@@ -227,7 +207,7 @@ Output B: 󰛢 `1 [2] 3`
 Output B: 󰛢 `1 2 3 4 […]`
 
 
-THE “SHORT” BUILT-IN
+THE “SHORT” BUILT-IN ~
 
 Add to the config: `formatter = 'short'`. Default options:
 `config.formatter_opts.short`
@@ -237,7 +217,7 @@ Output A: 󰛢 `[3]`
 Output B: 󰛢 `[2|3]`
 
 
-CUSTOMIZE A BUILT-IN
+CUSTOMIZE A BUILT-IN ~
 
 >lua
     Harpoonline.setup({
@@ -257,7 +237,7 @@ Output A: 󰛢 `123`
 Output B: 󰛢 `1[2]3`
 
 
-USE A CUSTOM FORMATTER
+USE A CUSTOM FORMATTER ~
 
 The following data is kept up-to-date internally, to be processed by
 formatters:
@@ -269,7 +249,8 @@ formatters:
     ---@field active_idx number|nil -- the harpoon index of the current buffer
 <
 
-Example "very short"
+
+EXAMPLE “VERY SHORT”
 
 >lua
     Harpoonline.setup({
@@ -289,11 +270,12 @@ Example "very short"
     })
 <
 
-OutputA: 󰛢 `-`
+Output A: 󰛢 `-`
 
 Output B: 󰛢 `2`
 
-Example "letters"
+
+EXAMPLE “LETTERS”
 
 >lua
     Harpoonline.setup({
@@ -318,15 +300,15 @@ Example "letters"
     })
 <
 
-OutputA: 󰛢 `jkl`
+Output A: 󰛢 `jkl`
 
 Output B: 󰛢 `jKl`
 
 _Note_
 
-- Youcan also use inner highlights in the formatter function.
+- Itis possible to also use inner highlights in the formatter function.
     See the example recipe for NvChad.
-- You can use the `harpoon` information inside each `data.items`
+- It is possible to use the `harpoon` information inside each `data.items`
 
 
 HARPOON LISTS                          *harpoonline-harpoonline-harpoon-lists*
