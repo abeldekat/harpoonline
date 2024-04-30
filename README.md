@@ -3,30 +3,6 @@
 Create up-to-date [harpoon2] information for any place where
 that information can be useful. For example, in statuslines and the tabline.
 
-## TOC
-
-<!--toc:start-->
-- [Harpoonline](#harpoonline)
-  - [Demo](#demo)
-  - [Features](#features)
-  - [Requirements](#requirements)
-  - [Setup](#setup)
-    - [Using lazy.nvim and lualine](#using-lazynvim-and-lualine)
-    - [Using mini.deps and mini.statusline](#using-minideps-and-ministatusline)
-  - [Configuration](#configuration)
-    - [Formatters](#formatters)
-      - [The "default" built-in](#the-default-built-in)
-      - [The "short" built-in](#the-short-built-in)
-      - [Customize a built-in](#customize-a-built-in)
-      - [Use a custom formatter](#use-a-custom-formatter)
-  - [Harpoon lists](#harpoon-lists)
-  - [Recipes](#recipes)
-    - [Heirline](#heirline)
-    - [NvChad statusline](#nvchad-statusline)
-  - [Related plugins](#related-plugins)
-  - [Acknowledgements](#acknowledgements)
-<!--toc:end-->
-
 ## Demo
 
 <https://github.com/abeldekat/harpoonline/assets/58370433/ec56eeb2-3cbf-46fe-bc9d-633f6aa8bb9b>
@@ -179,14 +155,16 @@ Harpoonline.config = {
 
 *Note*: The icon does not display properly in the browser...
 
-### Formatters
+## Formatters
 
 Scenario's:
 
 - A: 3 marks, the current buffer is not harpooned
 - B: 3 marks, the current buffer is harpooned on mark 2
 
-#### The "default" built-in
+*Note*: More examples can be found in [ak.config.ui.harpoonline]
+
+### The "default" built-in
 
 Default options: `config.formatter_opts.default`
 
@@ -198,7 +176,7 @@ Output B: 󰛢  ` 1 [2] 3 `
 
 Output B: 󰛢  ` 1  2  3  4 […] `
 
-#### The "short" built-in
+### The "short" built-in
 
 Add to the config: `formatter = 'short'`. Default options: `config.formatter_opts.short`
 
@@ -206,7 +184,7 @@ Output A: 󰛢  `[3]`
 
 Output B: 󰛢  `[2|3]`
 
-#### Customize a built-in
+### Customize a built-in
 
 ```lua
 Harpoonline.setup({
@@ -225,7 +203,7 @@ Output A: 󰛢  `123`
 
 Output B: 󰛢  `1[2]3`
 
-#### Use a custom formatter
+### Use a custom formatter
 
 The following data is kept up-to-date internally, to be processed by formatters:
 
@@ -236,7 +214,7 @@ The following data is kept up-to-date internally, to be processed by formatters:
 ---@field active_idx number|nil -- the harpoon index of the current buffer
 ```
 
-Example "very short":
+#### Example "very short"
 
 ```lua
 Harpoonline.setup({
@@ -260,7 +238,7 @@ Output A: 󰛢  `-`
 
 Output B: 󰛢  `2`
 
-Example "letters":
+#### Example "letters"
 
 ```lua
 Harpoonline.setup({
@@ -291,9 +269,9 @@ Output B: 󰛢  `jKl`
 
 *Note*:
 
-- You can also use inner highlights in the formatter function.
+- It is possible to also use inner highlights in the formatter function.
 See the example recipe for NvChad.
-- You can use the `harpoon` information inside each `data.items`
+- It is possible to use the `harpoon` information inside each `data.items`
 
 ## Harpoon lists
 
@@ -437,10 +415,11 @@ return M
 - @echasnovski: The structure of this plugin is heavily based on [mini.nvim]
 
 [harpoon2]: https://github.com/ThePrimeagen/harpoon/tree/harpoon2
-[mini.statusline]: https://github.com/echasnovski/mini.statusline
 [lualine]: https://github.com/nvim-lualine/lualine.nvim
+[mini.statusline]: https://github.com/echasnovski/mini.statusline
 [heirline]: https://github.com/rebelot/heirline.nvim
 [mini.nvim]: https://github.com/echasnovski/mini.nvim
 [harpoon-lualine]: https://github.com/letieu/harpoon-lualine
 [ak.config.editor.harpoon]: https://github.com/abeldekat/nvim_pde/blob/main/lua/ak/config/editor/harpoon.lua
+[ak.config.ui.harpoonline]: https://github.com/abeldekat/nvim_pde/blob/main/lua/ak/config/ui/harpoonline.lua
 [ak.config.ui.mini_statusline]: https://github.com/abeldekat/nvim_pde/blob/main/lua/ak/config/ui/mini_statusline.lua
