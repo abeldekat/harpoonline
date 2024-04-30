@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.1.0](https://github.com/abeldekat/harpoonline/compare/v3.0.1...v3.1.0) (2024-04-30)
+
+
+### Features
+
+* a better default icon: nf-md-hook ([#33](https://github.com/abeldekat/harpoonline/issues/33)) ([a1319b0](https://github.com/abeldekat/harpoonline/commit/a1319b044991bde2f7016cfdef654057cc16399d))
+* support REPLACE ([#31](https://github.com/abeldekat/harpoonline/issues/31)) ([5c6a69b](https://github.com/abeldekat/harpoonline/commit/5c6a69b2de2440119fc77c8fde29060677ec865e))
+
 ## [3.0.1](https://github.com/abeldekat/harpoonline/compare/v3.0.0...v3.0.1) (2024-04-28)
 
 
