@@ -1,4 +1,4 @@
-*harpoonline.txt*        For Neovim >= 0.9.0        Last change: 2024 April 28
+*harpoonline.txt*        For Neovim >= 0.9.0        Last change: 2024 April 30
 
 ==============================================================================
 Table of Contents                              *harpoonline-table-of-contents*
@@ -168,9 +168,10 @@ The following configuration is implied when calling `setup` without arguments:
 >lua
     ---@class HarpoonLineConfig
     Harpoonline.config = {
-      -- other nice icons: "󰀱", "", "󱡅", "󰛢"
+      -- other candidates: "󰀱", "", "󱡅", "󰶳"
+      -- default: icon nf-md-hook in nerdfont, unicode f06e2:
       ---@type string
-      icon = '󰀱', -- An empty string disables showing the icon
+      icon = '󰛢', -- An empty string disables showing the icon
     
       -- Harpoon:list(), when name is nil, retrieves the default list:
       -- default_list_name: Configures the display name for the default list.
@@ -217,13 +218,13 @@ THE “DEFAULT” BUILT-IN
 
 Default options: `config.formatter_opts.default`
 
-Output A: `1 2 3`
+Output A: 󰛢 `1 2 3`
 
-Output B: `1 [2] 3`
+Output B: 󰛢 `1 [2] 3`
 
 **Note**Five marks, the fifth mark is the active buffer:
 
-Output B: `1 2 3 4 […]`
+Output B: 󰛢 `1 2 3 4 […]`
 
 
 THE “SHORT” BUILT-IN
@@ -231,9 +232,9 @@ THE “SHORT” BUILT-IN
 Add to the config: `formatter = 'short'`. Default options:
 `config.formatter_opts.short`
 
-Output A: `[3]`
+Output A: 󰛢 `[3]`
 
-Output B: `[2|3]`
+Output B: 󰛢 `[2|3]`
 
 
 CUSTOMIZE A BUILT-IN
@@ -251,9 +252,9 @@ CUSTOMIZE A BUILT-IN
     })
 <
 
-Output A: `123`
+Output A: 󰛢 `123`
 
-Output B: `1[2]3`
+Output B: 󰛢 `1[2]3`
 
 
 USE A CUSTOM FORMATTER
@@ -288,9 +289,9 @@ Example "very short"
     })
 <
 
-OutputA: `-`
+OutputA: 󰛢 `-`
 
-Output B: `2`
+Output B: 󰛢 `2`
 
 Example "letters"
 
@@ -317,9 +318,9 @@ Example "letters"
     })
 <
 
-OutputA: `jkl`
+OutputA: 󰛢 `jkl`
 
-Output B: `jKl`
+Output B: 󰛢 `jKl`
 
 _Note_
 
