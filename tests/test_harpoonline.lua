@@ -32,7 +32,7 @@ local add_files_to_list = function(names, list_name)
   end
 end
 
-local icon = '󰀱'
+local icon = '󰛢'
 local more = '…'
 
 --          ╭─────────────────────────────────────────────────────────╮

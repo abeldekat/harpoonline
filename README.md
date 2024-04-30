@@ -142,9 +142,10 @@ The following configuration is implied when calling `setup` without arguments:
 ```lua
 ---@class HarpoonLineConfig
 Harpoonline.config = {
-  -- other nice icons: "󰀱", "", "󱡅", "󰛢"
+  -- other candidates: "󰀱", "", "󱡅", "󰶳"
+  -- default: icon nf-md-hook in nerdfont, unicode f06e2:
   ---@type string
-  icon = '󰀱', -- An empty string disables showing the icon
+  icon = '󰛢', -- An empty string disables showing the icon
 
   -- Harpoon:list(), when name is nil, retrieves the default list:
   -- default_list_name: Configures the display name for the default list.
@@ -189,21 +190,21 @@ Scenario's:
 
 Default options: `config.formatter_opts.default`
 
-Output A: :anchor:  ` 1  2  3 `
+Output A: 󰛢  ` 1  2  3 `
 
-Output B: :anchor:  ` 1 [2] 3 `
+Output B: 󰛢  ` 1 [2] 3 `
 
 **Note**: Five marks, the fifth mark is the active buffer:
 
-Output B: :anchor:  ` 1  2  3  4 […] `
+Output B: 󰛢  ` 1  2  3  4 […] `
 
 #### The "short" built-in
 
 Add to the config: `formatter = 'short'`. Default options: `config.formatter_opts.short`
 
-Output A: :anchor:  `[3]`
+Output A: 󰛢  `[3]`
 
-Output B: :anchor:  `[2|3]`
+Output B: 󰛢  `[2|3]`
 
 #### Customize a built-in
 
@@ -220,9 +221,9 @@ Harpoonline.setup({
 })
 ```
 
-Output A: :anchor:  `123`
+Output A: 󰛢  `123`
 
-Output B: :anchor:  `1[2]3`
+Output B: 󰛢  `1[2]3`
 
 #### Use a custom formatter
 
@@ -255,9 +256,9 @@ Harpoonline.setup({
 })
 ```
 
-Output A: :anchor:  `-`
+Output A: 󰛢  `-`
 
-Output B: :anchor:  `2`
+Output B: 󰛢  `2`
 
 Example "letters":
 
@@ -284,9 +285,9 @@ Harpoonline.setup({
 })
 ```
 
-Output A: :anchor:  `jkl`
+Output A: 󰛢  `jkl`
 
-Output B: :anchor:  `jKl`
+Output B: 󰛢  `jKl`
 
 *Note*:
 
