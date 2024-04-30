@@ -35,9 +35,10 @@ end
 
 ---@class HarpoonLineConfig
 Harpoonline.config = {
-  -- other nice icons: "󰀱", "", "󱡅"
+  -- other candidates: "󰀱", "", "󱡅", "󰶳"
+  -- default: icon nf-md-hook in nerdfont, unicode f06e2:
   ---@type string
-  icon = '󰀱', -- An empty string disables showing the icon
+  icon = '󰛢', -- An empty string disables showing the icon
 
   -- Harpoon:list(), when name is nil, retrieves the default list:
   -- default_list_name: Configures the display name for the default list.
