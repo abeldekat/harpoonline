@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/abeldekat/harpoonline/compare/v3.1.0...v4.0.0) (2024-07-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* archive the plugin ([#35](https://github.com/abeldekat/harpoonline/issues/35))
+
+### archive
+
+* archive the plugin ([#35](https://github.com/abeldekat/harpoonline/issues/35)) ([d3ad462](https://github.com/abeldekat/harpoonline/commit/d3ad462692ed4333911542ca4256d838417342ef))
+
 ## [3.1.0](https://github.com/abeldekat/harpoonline/compare/v3.0.1...v3.1.0) (2024-04-30)
 
 
