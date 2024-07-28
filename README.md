@@ -1,5 +1,7 @@
 # Harpoonline
 
+:exclamation: **Update**: This repository has been archived on 2024.07.28
+
 Create up-to-date [harpoon2] information for any place where
 that information can be useful. For example, in statuslines and the tabline.
 
