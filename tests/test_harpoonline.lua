@@ -58,7 +58,7 @@ local T = new_set({ -- Define main test set of this file
 --          ╰─────────────────────────────────────────────────────────╯
 T['setup()'] = new_set()
 T['setup()']['returns default when not invoked'] = function() eq(child.lua_get([[M.format()]]), '') end
-T['setup()']['works'] = function()
+T['setup()']['can be invoked'] = function()
   child.lua([[M.setup()]])
   eq(child.lua_get([[M.format()]]), icon .. ' ')
 end
