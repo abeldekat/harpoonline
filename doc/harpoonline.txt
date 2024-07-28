@@ -1,4 +1,4 @@
-*harpoonline.txt*        For Neovim >= 0.9.0        Last change: 2024 April 30
+*harpoonline.txt*         For Neovim >= 0.9.0        Last change: 2024 July 28
 
 ==============================================================================
 Table of Contents                              *harpoonline-table-of-contents*
@@ -18,6 +18,8 @@ Table of Contents                              *harpoonline-table-of-contents*
 
 ==============================================================================
 1. Harpoonline                                       *harpoonline-harpoonline*
+
+**Update**This repository has been archived on 2024.07.28
 
 Create up-to-date harpoon2
 <https://github.com/ThePrimeagen/harpoon/tree/harpoon2> information for any
